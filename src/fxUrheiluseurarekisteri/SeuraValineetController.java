@@ -7,6 +7,10 @@ import java.net.URISyntaxException;
 
 import fi.jyu.mit.fxgui.Dialogs;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  * @author jailklee
@@ -58,7 +62,15 @@ public class SeuraValineetController {
      * Välineen lisäys
      */
     private void valineenLisays() {
-        Dialogs.showMessageDialog("Ei osata vielä lisätä");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ValineenTiedot.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));  
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**

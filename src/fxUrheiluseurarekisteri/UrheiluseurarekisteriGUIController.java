@@ -68,14 +68,22 @@ public class UrheiluseurarekisteriGUIController {
         lainaamaan();
     }
 
-    //==============================================================>
+    //=============================================================================
 
     
     /**
      * Jäsenen lisäys
      */
     private void jasenenLisays() {
-        Dialogs.showMessageDialog("Ei osata vielä lisätä");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("JasenenTiedot.fxml"));
+            Parent root1 = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root1));  
+            stage.show();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
