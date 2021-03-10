@@ -12,9 +12,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
     seurarekisteri.test.JasenTest.class
-    //kerho.test.JasenetTest.class,
-    //kerho.test.KirjaTest.class,
-    //kerho.test.LainaTest.class
     })
 public class AllTests {
  //

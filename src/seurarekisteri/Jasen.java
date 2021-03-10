@@ -47,15 +47,6 @@ public class Jasen {
     
     
     /**
-     * Palautetaan nimi.
-     * @return jäsenen nimi
-     */
-    public String getNimi() {
-        return nimi;
-    }
-    
-    
-    /**
      * Jäsenen tunnuksen palautus
      * @return jäsenen ID
      */
@@ -65,36 +56,45 @@ public class Jasen {
     
     
     /**
-     * Täytetään testijäseniä joilla ei olisi samoja tietoja.
+     * Nimen palautus
+     * @return jäsenen nimi
      */
-    public void taytaJasen() {
-        int max = 1000000100;
-        int min = 1000000000;
+    public String getNimi() {
+        return nimi;
+    }  
+    
+    
+    /**
+     * Testijäsenen tietojen täyttö, pidetään huoli ettei kahta samanlaista. 
+     */
+    public void jasenenTaytto() {
+        int max = 10000100;
+        int min = 10000000;
         int range = max - min + 1;
         int randnum = (int)(Math.random() * range) + min;
         String rand = String.valueOf(randnum);
-        taytaJasen(rand);
+        jasenenTaytto(rand);
     }
     
     
     /**
-     * Täytetään testijäseniä joilla ei olisi samoja tietoja.
-     * @param rand random-numero jottei olisi samoja tietoja
+     * Testijäsenen tietojen täyttö, pidetään huoli ettei kahta samanlaista.
+     * @param rand satunnainen nro -> ei samoja tietoja
      */
-    public void taytaJasen(String rand) {
-        nimi = "Mallikas Mikko";
-        sotu = "010245-123U";
-        osoite = "Kotikuja 6";
-        postinro = "12345";
-        postitoimipaikka = "Kettula";
+    public void jasenenTaytto(String rand) {
+        nimi = "Jouko Joukkio";
+        sotu = "121212-2323";
+        osoite = "Kylpylätie 1";
+        postinro = "14144";
+        postitoimipaikka = "Jyväskunta";
         puhnro = rand;
-        sahkoposti = "m.mallikas@huhuu.com";
+        sahkoposti = "jj@jj.fi";
         muuta = "";
     }
     
     
     /**
-     * Tulostetaan henkilön tiedot.
+     * Jäsenen tietojen tulostus.
      * @param out tietovirta johon tulostetaan
      */
     public void tulosta(PrintStream out) {
@@ -108,7 +108,7 @@ public class Jasen {
     
     
     /**
-     * Tulostetaan henkilön tiedot.
+     * Jäsenen tietojen tulostus.
      * @param os tietovirta johon tulostetaan
      */
     public void tulosta(OutputStream os) {
@@ -127,8 +127,8 @@ public class Jasen {
         jasen2.rekisteroi();
         jasen1.tulosta(System.out);
         jasen2.tulosta(System.out);
-        jasen1.taytaJasen();
-        jasen2.taytaJasen();
+        jasen1.jasenenTaytto();
+        jasen2.jasenenTaytto();
         jasen1.tulosta(System.out);
         jasen2.tulosta(System.out);
     }
