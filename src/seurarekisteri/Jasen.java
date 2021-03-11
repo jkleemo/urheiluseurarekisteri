@@ -101,8 +101,8 @@ public class Jasen {
         out.println(String.format("%03d", jasenID) + "  " + nimi + "  "
                 + sotu);
         out.println("  " + osoite + "  " + postinro + " " + postitoimipaikka);
-        out.println("  puh: " + puhnro);
-        out.println("  e-mail: " + sahkoposti);
+        out.println("  puhelin: " + puhnro);
+        out.println("  sähköposti: " + sahkoposti);
         out.println("  " + muuta);
     }
     

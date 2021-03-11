@@ -81,7 +81,7 @@ public class Laina {
      * @param out tietovirta johon tulostetaan
      */
     public void tulosta(PrintStream out) {
-        out.println(String.format("%03d", lainaID) + "  " + "jäsen id " + jasenID + " kirja id " + valineID);
+        out.println(String.format("%03d", lainaID) + "  " + "jäsen id " + jasenID + " väline id " + valineID);
     }
     
     

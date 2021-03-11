@@ -6,18 +6,21 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import fi.jyu.mit.fxgui.Dialogs;
+import fi.jyu.mit.fxgui.ListChooser;
+import fi.jyu.mit.fxgui.ModalControllerInterface;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import seurarekisteri.Urheiluseurarekisteri;
+import seurarekisteri.Valine;
 
 /**
+ * Välineikkunan kontrolleri
  * @author jailklee
  * @version 19 Feb 2021
  *
  */
-public class SeuraValineetController {
+public class SeuraValineetController implements ModalControllerInterface<Urheiluseurarekisteri> {
+    @FXML private ListChooser<Valine> listChooserValineet;
+
 
     @FXML
     void handleLainaaValine() {
@@ -56,22 +59,35 @@ public class SeuraValineetController {
 
     
     //<==============================================================>
-
+    private Urheiluseurarekisteri urheiluseurarekisteri;
     
     /**
-     * Välineen lisäys
+     * Välineen lisäys, luodaan väline jota voidaan muokata
      */
     private void valineenLisays() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ValineenTiedot.fxml"));
-            Parent root1 = (Parent) fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root1));  
-            stage.show();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        Valine valine = new Valine();
+        valine.rekisteroi();
+        valine.taytaValine();
+        urheiluseurarekisteri.lisaa(valine);
+        hae(valine.getValineID());
     }
+    
+    
+    /**
+     * Välineen hakeminen
+     * param nro välineen numero
+     */
+    private void hae(int nro) {
+        listChooserValineet.clear();
+        int in = 0;
+        for (int i=0; i<urheiluseurarekisteri.getValineita(); i++) {
+            Valine valine = urheiluseurarekisteri.annaValine(i);
+            if (valine.getValineID() == nro) in = i;
+            listChooserValineet.add(valine.getValineenNimi(), valine);
+        }
+        listChooserValineet.setSelectedIndex(in);
+    }
+    
     
     /**
      * Suljetaan ohjelma
@@ -125,5 +141,31 @@ public class SeuraValineetController {
      */
     private void lainaa() {
         Dialogs.showMessageDialog("Ei osata vielä lainata");
+    }
+
+    
+    @Override
+    public Urheiluseurarekisteri getResult() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
+    @Override
+    public void handleShown() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
+    /**
+     * Väline-ikkunan kontorllerin alustaminen
+     * @param urheiluseurarekisteri avattu urheiluseurarekisteri
+     * 
+     */
+    @Override
+    public void setDefault(Urheiluseurarekisteri urheiluseurarekisteri) {
+        this.urheiluseurarekisteri = urheiluseurarekisteri;
+        hae(0);
     }
 }

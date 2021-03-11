@@ -23,7 +23,7 @@
          <left>
             <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <center>
-                  <ListChooser rivit="Sukset&#10;Sauvat&#10;Jalkapallo&#10;Sulkapallo&#10;Koripallo&#10;Laskettelukypärä&#10;Hanskat&#10;Jääkiekko" BorderPane.alignment="CENTER" />
+                  <ListChooser fx:id="listChooserValineet" rivit="Sukset&#10;Sauvat&#10;Jalkapallo&#10;Sulkapallo&#10;Koripallo&#10;Laskettelukypärä&#10;Hanskat&#10;Jääkiekko" BorderPane.alignment="CENTER" />
                </center>
                <top>
                   <Label text="Seuran välineet:" BorderPane.alignment="CENTER" />
