@@ -11,11 +11,13 @@ import fi.jyu.mit.fxgui.ModalControllerInterface;
 import javafx.fxml.FXML;
 import seurarekisteri.Urheiluseurarekisteri;
 import seurarekisteri.Valine;
+import seurarekisteri.SailoException;
+import seurarekisteri.Laina;
 
 /**
  * Välineikkunan kontrolleri
  * @author jailklee
- * @version 19 Feb 2021
+ * @version 07 Apr 2021
  *
  */
 public class SeuraValineetController implements ModalControllerInterface<Urheiluseurarekisteri> {
@@ -64,12 +66,19 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     /**
      * Välineen lisäys, luodaan väline jota voidaan muokata
      */
-    private void valineenLisays() {
+    private String valineenLisays() {
         Valine valine = new Valine();
         valine.rekisteroi();
         valine.taytaValine();
         urheiluseurarekisteri.lisaa(valine);
+        try {
+            urheiluseurarekisteri.tallennaValineet();
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Error! " + ex.getMessage());
+            return ex.getMessage();
+        }
         hae(valine.getValineID());
+        return null;
     }
     
     
@@ -116,8 +125,14 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     /**
      * Välineen tallentaminen
      */
-    private void valineenTallennus() {
-        Dialogs.showMessageDialog("Ei osata vielä tallentaa");
+    private String valineenTallennus() {
+        try {
+            urheiluseurarekisteri.tallenna();
+            return null;
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Error! " + ex.getMessage());
+            return ex.getMessage();
+        }
         
     }
     
@@ -137,12 +152,48 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     }
     
     /**
-     * Siirrytään lainausikkunaan
+     * Lainausominaisuus. Ilmoittaa onnistuneesta lainasta sekä siitä jos väline on jo lainassa.
      */
-    private void lainaa() {
-        Dialogs.showMessageDialog("Ei osata vielä lainata");
+    private String lainaa() {
+        if (listChooserValineet.getSelectedObject() == null) return null;
+        int vid = listChooserValineet.getSelectedObject().getValineID();
+        if (urheiluseurarekisteri.getValineID(vid) == true) {
+            Dialogs.showMessageDialog("Väline on jo lainassa!");
+            return null;
+        }
+        Laina laina = new Laina(urheiluseurarekisteri.getJasenNakyyNro(), listChooserValineet.getSelectedObject().getValineID());
+        laina.rekisteroi();
+        urheiluseurarekisteri.lisaa(laina);
+        try {
+            urheiluseurarekisteri.tallennaLainat();
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Error! " + ex.getMessage());
+            return ex.getMessage();
+        }
+        Dialogs.showMessageDialog(listChooserValineet.getSelectedObject().getValineenNimi() 
+                + " on nyt lainattu jäsenelle " + urheiluseurarekisteri.getJasenNakyyNro() + ".");
+        return null;
     }
 
+    
+    /**
+     * Alustus tiedostosta lukemalla
+     * @return null onnistuessa, muuten virheilmoitus
+     */
+    protected String lueTiedostosta() {
+        try {
+            urheiluseurarekisteri.lueValineetTiedostosta();
+            hae(0);
+            urheiluseurarekisteri.lueLainatTiedostosta();
+            return null;
+        } catch (SailoException e) {
+            hae(0);
+            String virhe = e.getMessage(); 
+            if ( virhe != null ) Dialogs.showMessageDialog(virhe);
+            return virhe;
+        }
+     }
+    
     
     @Override
     public Urheiluseurarekisteri getResult() {
@@ -166,6 +217,6 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     @Override
     public void setDefault(Urheiluseurarekisteri urheiluseurarekisteri) {
         this.urheiluseurarekisteri = urheiluseurarekisteri;
-        hae(0);
+        lueTiedostosta();
     }
 }

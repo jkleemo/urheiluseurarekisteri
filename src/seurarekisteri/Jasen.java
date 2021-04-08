@@ -2,13 +2,13 @@ package seurarekisteri;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-
+import fi.jyu.mit.ohj2.Mjonot;
 
 /**
  * Ylläpitää jasenID:tä, tietää jäsenen kentät (nimi, sotu, osoite, jne.), 
  * osaa tarkistaa tietyn kentän oikeellisuuden, jne.
  * @author jailklee
- * @version 10 Mar 2021
+ * @version 06 Apr 2021
  *
  */
 public class Jasen {
@@ -52,6 +52,72 @@ public class Jasen {
      */
     public int getJasenID() {
         return jasenID;
+    }
+    
+    
+    /**
+     * Palauttaa jäsenen tiedot merkkijonona jonka voi tallentaa tiedostoon.
+     * @example
+     * <pre name="test">
+     *   Jasen jasen = new Jasen();
+     *   jasen.parse("   1  |  Jouko Jii   | 123445-1212");
+     *   jasen.toString().startsWith("1|Jouko Jii|123445-1212|") === true;
+     * </pre>  
+     */
+    @Override
+    public String toString() {
+        return "" +
+                getJasenID() + "|" +
+                nimi + "|" +
+                sotu + "|" +
+                osoite + "|" +
+                postinro + "|" +
+                postitoimipaikka + "|" +
+                puhnro + "|" +
+                sahkoposti + "|" +
+                muuta;           
+    }
+    
+    
+    /**
+     * Selvitää jäsenen tiedot | erotellusta merkkijonosta
+     * @param rivi mistä tiedot otetaan
+     * 
+     * @example
+     * <pre name="test">
+     *   Jasen jasen = new Jasen();
+     *   jasen.parse("   1  |  Jouko Jii   | 123445-1212");
+     *   jasen.getJasenID() === 1;
+     *   jasen.toString().startsWith("1|Jouko Jii|123445-1212|") === true;
+     *
+     *   jasen.rekisteroi();
+     *   int n = jasen.getJasenID();
+     *   jasen.parse(""+(n+10));       
+     *   jasen.rekisteroi();           
+     *   jasen.getJasenID() === n+10+1;
+     *     
+     * </pre>
+     */
+    public void parse(String rivi) {
+        StringBuffer sb = new StringBuffer(rivi);
+        setJasenID(Mjonot.erota(sb, '|', getJasenID()));
+        nimi = Mjonot.erota(sb, '|', nimi);
+        sotu = Mjonot.erota(sb, '|', sotu);
+        osoite = Mjonot.erota(sb, '|', osoite);
+        postinro = Mjonot.erota(sb, '|', postinro);
+        postitoimipaikka = Mjonot.erota(sb, '|', postitoimipaikka);
+        puhnro = Mjonot.erota(sb, '|', puhnro);
+        sahkoposti = Mjonot.erota(sb, '|', sahkoposti);
+        muuta = Mjonot.erota(sb, '|', muuta);
+    }
+    
+    
+    /**
+     * Asetetaan tunnusnumero.
+     */
+    private void setJasenID(int nro) {
+        jasenID = nro;
+        if (jasenID >= seuraavaNro) seuraavaNro = jasenID+1;
     }
     
     

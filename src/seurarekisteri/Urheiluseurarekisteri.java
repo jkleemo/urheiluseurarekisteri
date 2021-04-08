@@ -1,20 +1,60 @@
 package seurarekisteri;
 
+import fi.jyu.mit.fxgui.Dialogs;
+
 
 /**
  * Urheiluseurarekisteri-luokka
  * @author jailklee
- * @version 11 Mar 2021
+ * @version 07 Arp 2021
  *
  */
 public class Urheiluseurarekisteri {
-    private final Jasenet jasenet = new Jasenet();
-    private final Valineet valineet = new Valineet(); 
-    private final Lainat lainat = new Lainat(); 
+    private Jasenet jasenet = new Jasenet();
+    private Valineet valineet = new Valineet(); 
+    private Lainat lainat = new Lainat(); 
+    private int jasenNakyyNro;
+    
+    /**
+     * Valitun jäsenen numeron asettaminen attribuutiksi
+     * @param nro jäsenen nro
+     */
+    public void setJasenNakyyNro(int nro) {
+        jasenNakyyNro = nro;
+    }
+    
+    
+    /**
+     * Viimeisimmäksi asetetun jäsenen numeron palauttaminen
+     * @return jäsenen nro
+     */
+    public int getJasenNakyyNro() {
+        return jasenNakyyNro;
+    }
+    
+    
+    /**
+     * Tarkistetaan onko väline jo lainattu
+     * @param vid välineen id
+     * @return true jos on lainassa valmiiksi, jos ei niin false
+     */
+    public boolean getValineID(int vid) {
+        return lainat.getValineID(vid);
+    }
+    
     
     /**
      * Uuden jäsenen lisääminen
-     * @param jasen joka lisätään
+     * @param jasen lisättävä jäsen
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException
+     * Urheiluseurarekisteri rekisteri = new Urheiluseurarekisteri();
+     * Jasen jouko1 = new Jasen(), jouko2 = new Jasen();
+     * rekisteri.getJasenia() === 0;
+     * rekisteri.lisaa(jouko1); rekisteri.getJasenia() === 1;
+     * rekisteri.lisaa(jouko2); rekisteri.getJasenia() === 2;
+     * </pre>
      */
     public void lisaa(Jasen jasen) {
         jasenet.lisaa(jasen);
@@ -22,9 +62,45 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Jäsenen viitteen palauttaminen.
-     * @param i mikä jäsen
-     * @return jäsenen viite
+     * Uuden välineen lisääminen
+     * @param valine lisättävä väline
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException
+     * Urheiluseurarekisteri rekisteri = new Urheiluseurarekisteri();
+     * Valine pallo1 = new Valine(), pallo2 = new Valine();
+     * rekisteri.getValineita() === 0;
+     * rekisteri.lisaa(pallo1); rekisteri.getValineita() === 1;
+     * rekisteri.lisaa(pallo2); rekisteri.getValineita() === 2;
+     * </pre>
+     */
+    public void lisaa(Valine valine) {
+        valineet.lisaa(valine);
+    }
+    
+    
+    /**
+     * Uuden lainan lisääminen
+     * @param laina lisättävä laina
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException
+     * Urheiluseurarekisteri rekisteri = new Urheiluseurarekisteri();
+     * Laina laina1 = new Laina(1,1), laina2 = new Laina(2,2);
+     * rekisteri.getLainoja() === 0;
+     * rekisteri.lisaa(laina1); rekisteri.getLainoja() === 1;
+     * rekisteri.lisaa(laina2); rekisteri.getLainoja() === 2;
+     * </pre>
+     */
+    public void lisaa(Laina laina) {
+        lainat.lisaa(laina);
+    }
+    
+    
+    /**
+     * Jäsenen viitteen palauttaminen
+     * @param i mikä jäsen halutaan
+     * @return viite jäseneen
      * @throws IndexOutOfBoundsException indeksirajan ylittyessä
      */
     public Jasen annaJasen(int i) throws IndexOutOfBoundsException {
@@ -33,18 +109,9 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Uuden kirjan lisääminen
-     * @param valine joka lisätään
-     */
-    public void lisaa(Valine valine) {
-        valineet.lisaa(valine);
-    }
-    
-    
-    /**
-     * Välineen viitteen palauttaminen.
-     * @param i mikä kirja
-     * @return kirjan viite
+     * Välineen viitteen palauttaminen
+     * @param i mikä väline halutaan
+     * @return viite välineeseen
      * @throws IndexOutOfBoundsException indeksirajan ylittyessä
      */
     public Valine annaValine(int i) throws IndexOutOfBoundsException {
@@ -53,18 +120,9 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Uuden lainan lisääminen
-     * @param laina joka lisätään
-     */
-    public void lisaa(Laina laina) {
-        lainat.lisaa(laina);
-    }
-    
-    
-    /**
      * Lainan viitteen palauttaminen
-     * @param i mikä laina
-     * @return lainan viite
+     * @param i mikä laina halutaan
+     * @return viite lainaan
      * @throws IndexOutOfBoundsException indeksirajan ylittyessä
      */
     public Laina annaLaina(int i) throws IndexOutOfBoundsException {
@@ -73,18 +131,38 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Urheiluseurarekisterin tietojen luku
-     * @param nimi mikä tiedosto?
+     * Luetaan seurarekisterin tiedot.
      * @throws SailoException epäonnistuessa
      */
-    public void lueTiedostosta(String nimi) throws SailoException {
-        jasenet.lueTiedostosta(nimi);
+    public void lueJasenetTiedostosta() throws SailoException {
+        jasenet = new Jasenet();
+        jasenet.lueTiedostosta();
     }
     
     
     /**
-     * Urheiluseurarekisterin jäsenten lukumäärän palauttaminen
-     * @return jäsenten lkm
+     * Luetaan seurarekisterin tiedot.
+     * @throws SailoException epäonnistuessa
+     */
+    public void lueValineetTiedostosta() throws SailoException {
+        valineet = new Valineet();
+        valineet.lueTiedostosta();
+    }
+    
+    
+    /**
+     * Luetaan seurarekisterin tiedot.
+     * @throws SailoException epäonnistuessa
+     */
+    public void lueLainatTiedostosta() throws SailoException {
+        lainat = new Lainat();
+        lainat.lueTiedostosta();
+    }
+    
+    
+    /**
+     * Palauttaa seurarekisterin jäsenten lukumäärän.
+     * @return jäsenten lukumäärä
      */
     public int getJasenia() {
         return jasenet.getLkm();
@@ -92,8 +170,8 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Välineiden lukumäärän palauttaminen
-     * @return välineiden lkm
+     * Palauttaa seurarekisterin välineiden lukumäärän.
+     * @return välineiden lukumäärä
      */
     public int getValineita() {
         return valineet.getLkm();
@@ -101,8 +179,8 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Lainojen lukumäärän palauttaminen
-     * @return lainojen lkm
+     * Palauttaa seurarekisterin lainojen lukumäärän.
+     * @return lainojen lukumäärä
      */
     public int getLainoja() {
         return lainat.getLkm();
@@ -110,12 +188,50 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Tiedostoon tallentaminen
-     * @throws SailoException epäonnistuessa
+     * TODO: poista-ominaisuus
+     * @param nro poistettavan jäsenen tai välineen viite
+     * @return mitä poistettiin
+     */
+    public int poista(@SuppressWarnings("unused") int nro) {
+        return 0;
+    }
+    
+    
+    /**
+     * Seurarekisterin tietojen tallentaminen tiedostoon
+     * @throws SailoException tallennuksen epäonnistuessa
      */
     public void tallenna() throws SailoException {
         jasenet.tallenna();
         valineet.tallenna();
+        lainat.tallenna();
+        Dialogs.showMessageDialog("Tallennus onnistui!");
+    }
+    
+    
+    /**
+     * Jäsenten tallennus tiedostoon
+     * @throws SailoException jos epäonnistuu
+     */
+    public void tallennaJasenet() throws SailoException {
+        jasenet.tallenna();
+    }
+    
+    
+    /**
+     * Välineiden tallennus tiedostoon
+     * @throws SailoException jos epäonnistuu
+     */
+    public void tallennaValineet() throws SailoException {
+        valineet.tallenna();
+    }
+    
+    
+    /**
+     * Lainojen tallennus tiedostoon
+     * @throws SailoException jos epäonnistuu
+     */
+    public void tallennaLainat() throws SailoException {
         lainat.tallenna();
     }
     

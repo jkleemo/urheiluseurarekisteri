@@ -15,11 +15,12 @@ import javafx.scene.control.TextArea;
 
 import seurarekisteri.Urheiluseurarekisteri;
 import seurarekisteri.Jasen;
+import seurarekisteri.SailoException;
 
 /**
  * Pääikkunan kontrolleri
  * @author jailklee
- * @version 19.2.2021
+ * @version 07 Apr 2021
  *
  */
 public class UrheiluseurarekisteriGUIController {
@@ -79,7 +80,33 @@ public class UrheiluseurarekisteriGUIController {
     //=============================================================================
 
     private Urheiluseurarekisteri urheiluseurarekisteri;
-    private Jasen jasenNakyy;  
+    private Jasen jasenNakyy;
+    private static int jasenNro;
+    
+    /**
+     * Tiedoston avaaminen
+     */
+    public void avaa() {
+        lueTiedosto();
+    }
+    
+    
+    /**
+     * Alustaa kerhon lukemalla sen valitun nimisestä tiedostosta
+     * @return null sen onnistuessa, muuten ilmoittaa virheestä
+     */
+    protected String lueTiedosto() {
+        try {
+            urheiluseurarekisteri.lueJasenetTiedostosta();
+            hae(0);
+            return null;
+        } catch (SailoException e) {
+            hae(0);
+            String virhe = e.getMessage(); 
+            if ( virhe != null ) Dialogs.showMessageDialog(virhe);
+            return virhe;
+        }
+    }
     
     
     /**
@@ -94,7 +121,7 @@ public class UrheiluseurarekisteriGUIController {
     
     
     /**
-     * Jäsenen haku
+     * Jäsenen haku listaan
      * param nro jäsenen numero
      */
     private void hae(int nro) {
@@ -114,12 +141,19 @@ public class UrheiluseurarekisteriGUIController {
     /**
      * Jäsenen lisäys, luodaan jäsen jota voidaan muokata
      */
-    private void jasenenLisays() {
+    private String jasenenLisays() {
         Jasen jasen = new Jasen();
         jasen.rekisteroi();
         jasen.jasenenTaytto();
         urheiluseurarekisteri.lisaa(jasen);
+        try {
+            urheiluseurarekisteri.tallennaJasenet();
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Error! " + ex.getMessage());
+            return ex.getMessage();
+        }
         hae(jasen.getJasenID());
+        return null;
     }
     
     
@@ -169,17 +203,14 @@ public class UrheiluseurarekisteriGUIController {
     /**
      * Jäsenen tietojen tallennus
      */
-    private void jasenenTallennus() {
-        Dialogs.showMessageDialog("Ei osata vielä tallentaa");
-        
-    }
-    
-    
-    /**
-     * Palautukseen
-     */
-    private void palautukseen() {
-        Dialogs.showMessageDialog("Ei osata vielä palauttaa");
+    private String jasenenTallennus() {
+        try {
+            urheiluseurarekisteri.tallenna();
+            return null;
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Error! " + ex.getMessage());
+            return ex.getMessage();
+        }
         
     }
     
@@ -190,7 +221,9 @@ public class UrheiluseurarekisteriGUIController {
      * @param jasen kenen tiedot tulostetaan
      */
     public void tulosta(PrintStream os, final Jasen jasen) {
+        os.println("----------------------------------------------------------------------------------------------");
         jasen.tulosta(os);
+        os.println("----------------------------------------------------------------------------------------------");
     }
     
     
@@ -210,12 +243,23 @@ public class UrheiluseurarekisteriGUIController {
     }
     
     
+    /**
+     * Palautusikkunaan siirtyminen
+     */
+    private void palautukseen() {
+        if (jasenNakyy == null) return;
+        jasenNro = jasenNakyy.getJasenID();
+        urheiluseurarekisteri.setJasenNakyyNro(jasenNro);
+        ModalController.showModal(SeuraLainatController.class.getResource("SeuraLainatView.fxml"), "Lainat",  null, urheiluseurarekisteri);
+    }
     
     /**
      * Välineikkunaan siirtyminen
      */
     private void lainaamaan() {
         if (jasenNakyy == null) return;
+        jasenNro = jasenNakyy.getJasenID();
+        urheiluseurarekisteri.setJasenNakyyNro(jasenNro);
         ModalController.showModal(SeuraValineetController.class.getResource("SeuraValineetView.fxml"), "Välineet",  null, urheiluseurarekisteri);
     }
 } 

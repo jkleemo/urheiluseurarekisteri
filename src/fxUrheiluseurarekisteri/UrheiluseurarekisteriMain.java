@@ -11,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 /**
  * Rekisterin käynnistävä pääohjelma
  * @author jailklee
- * @version 19.2.2021
+ * @version 07 Apr 2021
  *
  */
 public class UrheiluseurarekisteriMain extends Application {
@@ -20,13 +20,14 @@ public class UrheiluseurarekisteriMain extends Application {
         try {
             final FXMLLoader ldr = new FXMLLoader(getClass().getResource("UrheiluseurarekisteriGUIView.fxml"));
             final Pane root = (Pane)ldr.load();
-            final UrheiluseurarekisteriGUIController urheiluseurarekisteriController = (UrheiluseurarekisteriGUIController)ldr.getController();
+            final UrheiluseurarekisteriGUIController seuraController = (UrheiluseurarekisteriGUIController)ldr.getController();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("urheiluseurarekisteri.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setTitle("Urheiluseurarekisteri");
             Urheiluseurarekisteri urheiluseurarekisteri = new Urheiluseurarekisteri();
-            urheiluseurarekisteriController.setUrheiluseurarekisteri(urheiluseurarekisteri);
+            seuraController.setUrheiluseurarekisteri(urheiluseurarekisteri);
+            seuraController.avaa();
             primaryStage.show();
         } catch(Exception e) {
             e.printStackTrace();
