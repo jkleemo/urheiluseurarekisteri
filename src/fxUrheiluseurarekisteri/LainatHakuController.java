@@ -1,13 +1,11 @@
 package fxUrheiluseurarekisteri;
 
 import fi.jyu.mit.fxgui.Dialogs;
-import fi.jyu.mit.fxgui.ListChooser;
 import fi.jyu.mit.fxgui.ModalController;
 import fi.jyu.mit.fxgui.ModalControllerInterface;
 import javafx.fxml.FXML;
+import javafx.scene.layout.BorderPane;
 import seurarekisteri.Urheiluseurarekisteri;
-import seurarekisteri.Valine;
-import seurarekisteri.Laina;
 import seurarekisteri.SailoException;
 
 /**
@@ -15,58 +13,23 @@ import seurarekisteri.SailoException;
  * @version 07 Apr 2021
  *
  */
-public class SeuraLainatController implements ModalControllerInterface<Urheiluseurarekisteri> {
-    @FXML private ListChooser<Laina> listChooserLainat;
+public class LainatHakuController implements ModalControllerInterface<Urheiluseurarekisteri> {
+    @FXML private BorderPane borderPaneSulje;
+        
+        @FXML
+        void handleOK() {
+            painaOK();
+        }
 
-    @FXML
-    void handlePalauta() {
-        palauta();
-    }
-
-    @FXML
-    void handlePeruuta() {
-        takaisin();
-    }    
     //<==============================================================>
     private Urheiluseurarekisteri urheiluseurarekisteri;
-    
-    /**
-     * TODO: palautusominaisuus ei vielä toimi
-     */
-    private void palauta() {
-        Dialogs.showMessageDialog("Ei osata vielä palauttaa lainoja!");
-    }
     
     
     /**
      * Palataan takaisin pääikkunaan
      */
-    private void takaisin() {
-        ModalController.closeStage(listChooserLainat);
-    }
-    
-
-    /**
-     * Lainojen haku listaan
-     */
-    private void hae() {
-        listChooserLainat.clear();
-        int il = 0;
-        int vid;
-        for (int i=0; i<urheiluseurarekisteri.getLainoja(); i++) {
-            Laina laina = urheiluseurarekisteri.annaLaina(i);
-            if (laina.getJasenID() == urheiluseurarekisteri.getJasenNakyyNro()) {
-                vid = laina.getValineID();
-                for (int j=0; i<urheiluseurarekisteri.getValineita(); j++) {
-                    Valine valine = urheiluseurarekisteri.annaValine(j);
-                    if (valine.getValineID() == vid) {
-                        listChooserLainat.add(valine.getValineenNimi(), laina);
-                        break;
-                    }
-                }
-            }
-        }
-        listChooserLainat.setSelectedIndex(il);
+    private void painaOK() {
+        ModalController.closeStage(borderPaneSulje);
     }
     
     
@@ -77,11 +40,9 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
     protected String lueTiedostosta() {
         try {
             urheiluseurarekisteri.lueLainatTiedostosta();
-            hae();
             urheiluseurarekisteri.lueValineetTiedostosta();
             return null;
         } catch (SailoException e) {
-            hae();
             String virhe = e.getMessage(); 
             if ( virhe != null ) Dialogs.showMessageDialog(virhe);
             return virhe;
@@ -102,7 +63,7 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
     }
 
     /**
-     * Laina-ikkunan kontrollerin alustus
+     * Haku-ikkunan kontrollerin alustus
      * @param urheiluseurarekisteri seurarekisteri
      */
     @Override

@@ -6,13 +6,13 @@ import fi.jyu.mit.fxgui.Dialogs;
 import fi.jyu.mit.fxgui.ListChooser;
 import fi.jyu.mit.fxgui.ModalController;
 import fi.jyu.mit.fxgui.TextAreaOutputStream;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-
 import seurarekisteri.Urheiluseurarekisteri;
 import seurarekisteri.Jasen;
 import seurarekisteri.SailoException;
@@ -247,11 +247,21 @@ public class UrheiluseurarekisteriGUIController {
      * Palautusikkunaan siirtyminen
      */
     private void palautukseen() {
+        haeLainat();
         if (jasenNakyy == null) return;
         jasenNro = jasenNakyy.getJasenID();
         urheiluseurarekisteri.setJasenNakyyNro(jasenNro);
         ModalController.showModal(SeuraLainatController.class.getResource("SeuraLainatView.fxml"), "Lainat",  null, urheiluseurarekisteri);
     }
+    
+    
+    private void haeLainat() {
+        if (jasenNakyy == null) return;
+        jasenNro = jasenNakyy.getJasenID();
+        urheiluseurarekisteri.setJasenNakyyNro(jasenNro);
+        ModalController.showModal(LainatHakuController.class.getResource("LainatHakuView.fxml"), "",  null, urheiluseurarekisteri);
+    }
+
     
     /**
      * Välineikkunaan siirtyminen
