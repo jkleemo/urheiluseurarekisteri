@@ -1,13 +1,38 @@
 package seurarekisteri;
 
+import java.util.Collection;
+
 import fi.jyu.mit.fxgui.Dialogs;
 
 
 /**
  * Urheiluseurarekisteri-luokka
  * @author jailklee
- * @version 07 Arp 2021
+ * @version 14 Apr 2021
  *
+ * @example
+ * <pre name="testJAVA">
+ * #import seurarekisteri.SailoException;
+ *  private Urheiluseurarekisteri urheiluseurarekisteri;
+ *  private Jasen jasen1;
+ *  private Jasen jasen2;
+ *  private int jid1;
+ *  private int jid2;
+ *  
+ *  public void alustaUrheiluseurarekisteri() {
+ *    urheiluseurarekisteri = new Urheiluseurarekisteri();
+ *    jasen1 = new Jasen(); jasen1.jasenenTaytto(); jasen1.rekisteroi();
+ *    jasen2 = new Jasen(); jasen2.jasenenTaytto(); jasen2.rekisteroi();
+ *    jid1 = jasen1.getJasenID();
+ *    jid2 = jasen2.getJasenID();
+ *    try {
+ *    urheiluseurarekisteri.lisaa(jasen1);
+ *    urheiluseurarekisteri.lisaa(jasen2);
+ *    } catch ( Exception e) {
+ *       System.err.println(e.getMessage());
+ *    }
+ *  }
+ * </pre>
  */
 public class Urheiluseurarekisteri {
     private Jasenet jasenet = new Jasenet();
@@ -44,6 +69,30 @@ public class Urheiluseurarekisteri {
     
     
     /**
+     * Palauttaa "taulukossa" hakuehtoon vastaavien jäsenten viitteet.
+     * @param hakuehto hakuehto
+     * @param k kentän indeksi
+     * @return jäsenet, jotka löytyivät
+     * @throws SailoException poikkeus
+     */
+    public Collection<Jasen> etsi(String hakuehto, int k) throws SailoException { 
+        return jasenet.etsi(hakuehto, k); 
+    } 
+    
+    
+    /**
+     * Palauttaa "taulukossa" hakuehtoon vastaavien välineiden viitteet.
+     * @param hakuehto hakuehto
+     * @param k kentän indeksi
+     * @return jäsnenet, jotka löytyivät
+     * @throws SailoException poikkeus
+     */
+    public Collection<Valine> etsiValine(String hakuehto, int k) throws SailoException { 
+        return valineet.etsi(hakuehto, k); 
+    }
+    
+    
+    /**
      * Uuden jäsenen lisääminen
      * @param jasen lisättävä jäsen
      * @example
@@ -62,6 +111,17 @@ public class Urheiluseurarekisteri {
     
     
     /**
+     * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa.
+     * @param jasen lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi
+     * @throws SailoException poikkeus
+     * 
+     */ 
+    public void korvaaTaiLisaa(Jasen jasen) throws SailoException { 
+        jasenet.korvaaTaiLisaa(jasen); 
+    } 
+    
+    
+    /**
      * Uuden välineen lisääminen
      * @param valine lisättävä väline
      * @example
@@ -77,6 +137,17 @@ public class Urheiluseurarekisteri {
     public void lisaa(Valine valine) {
         valineet.lisaa(valine);
     }
+    
+    
+    /**
+     * Korvaa välineen tietorakenteessa.  Ottaa välineen omistukseensa.
+     * @param valine lisätäävän välineen viite.  Huom tietorakenne muuttuu omistajaksi
+     * @throws SailoException poikkeus
+     * 
+     */ 
+    public void korvaaTaiLisaa(Valine valine) throws SailoException { 
+        valineet.korvaaTaiLisaa(valine); 
+    } 
     
     
     /**
@@ -109,6 +180,16 @@ public class Urheiluseurarekisteri {
     
     
     /**
+     * Jäsenen palauttaminen
+     * @param id jasenID
+     * @return palautetaan jäsen tai null
+     */
+    public Jasen getJasen(int id) {
+        return jasenet.getJasen(id);
+    }
+    
+    
+    /**
      * Välineen viitteen palauttaminen
      * @param i mikä väline halutaan
      * @return viite välineeseen
@@ -116,6 +197,16 @@ public class Urheiluseurarekisteri {
      */
     public Valine annaValine(int i) throws IndexOutOfBoundsException {
         return valineet.anna(i);
+    }
+    
+    
+    /**
+     * Välineen palauttaminen      
+     * @param vid välineID
+     * @return palautetaana väline tai null
+     */
+    public Valine getValine(int vid) {
+        return valineet.getValine(vid);
     }
     
     
@@ -188,12 +279,51 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * TODO: poista-ominaisuus
-     * @param nro poistettavan jäsenen tai välineen viite
-     * @return mitä poistettiin
+     * Jäsenen poistaminen
+     * @param jasen joka poistetaan'
+     * 
      */
-    public int poista(@SuppressWarnings("unused") int nro) {
-        return 0;
+    public void poista(Jasen jasen) {
+        if (jasen == null) return;
+        jasenet.poista(jasen.getJasenID());  
+    }
+    
+    
+    /**
+     * Välineen poistaminen
+     * @param valine joka poistetaan
+     */
+    public void poista(Valine valine) {
+        if (valine == null) return;
+        valineet.poista(valine.getValineID());  
+    }
+    
+    
+    /**
+     * Lainan poistaminen
+     * @param laina joka poistetaan
+     */
+    public void poista(Laina laina) {
+        if (laina == null) return;
+        lainat.poista(laina.getLainaID());  
+    }
+    
+    
+    /**
+     * Lainan poisto samalla, kun väline poistetaan
+     * @param vid välineID
+     */
+    public void poistaLaina(int vid) {
+        lainat.poistaLaina(vid);
+    }
+    
+    
+    /**
+     * Jäsenen kaikkien lainojen poistaminen
+     * @param jid jasenID
+     */
+    public void poistaJasenenLainat(int jid) {
+        lainat.poistaJasenenLainat(jid);
     }
     
     
@@ -293,4 +423,18 @@ public class Urheiluseurarekisteri {
             laina.tulosta(System.out);
         }
     }
+
+
+    /**
+     * Tallentaa hiljaisesti
+     * Seurarekisterin tietojen tallentaminen tiedostoon
+     * @throws SailoException tallennuksen epäonnistuessa
+     */
+    public void hiljainenTallenna() throws SailoException {
+        jasenet.tallenna();
+        valineet.tallenna();
+        lainat.tallenna();
+        
+    }
+
 }

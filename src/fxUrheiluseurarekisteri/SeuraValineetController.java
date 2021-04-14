@@ -1,14 +1,20 @@
 package fxUrheiluseurarekisteri;
 
+
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.util.Collection;
+import static fxUrheiluseurarekisteri.ValineenTiedotController.getFieldId;
 import fi.jyu.mit.fxgui.Dialogs;
 import fi.jyu.mit.fxgui.ListChooser;
+import fi.jyu.mit.fxgui.ModalController;
 import fi.jyu.mit.fxgui.ModalControllerInterface;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import seurarekisteri.Urheiluseurarekisteri;
 import seurarekisteri.Valine;
 import seurarekisteri.SailoException;
@@ -17,11 +23,13 @@ import seurarekisteri.Laina;
 /**
  * Välineikkunan kontrolleri
  * @author jailklee
- * @version 07 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class SeuraValineetController implements ModalControllerInterface<Urheiluseurarekisteri> {
     @FXML private ListChooser<Valine> listChooserValineet;
+    @FXML private ScrollPane scrollPanelValine;
+    @FXML private GridPane gridPaneValine;
 
 
     @FXML
@@ -33,6 +41,13 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     void handleLisaaValine() {
         valineenLisays();
     }
+    
+    @FXML
+    void handleTakaisin() {
+        valineenTallennus();
+        ModalController.closeStage(listChooserValineet);
+
+    }
 
     @FXML
     void handleLopeta() {
@@ -41,7 +56,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
 
     @FXML
     void handleMuokkaaValine() {
-        valineenMuokkaus();
+        muokkaaValine(1);
     }
 
     @FXML
@@ -62,39 +77,96 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     
     //<==============================================================>
     private Urheiluseurarekisteri urheiluseurarekisteri;
+    private Valine valineNakyy;
+    private TextField edits[];
+    private int kentta = 0;
+    
+    
+    /**
+     * Välineikkunan alustaminen
+     */
+    protected void alusta() {
+        listChooserValineet.clear();
+        listChooserValineet.addSelectionListener(e -> naytaValine());
+        edits = ValineenTiedotController.luoKentat(gridPaneValine); 
+        for (TextField edit: edits) 
+             if (edit != null) { 
+                 edit.setEditable(false); 
+                 edit.setOnMouseClicked(e -> { if ( e.getClickCount() > 1 ) muokkaaValine(getFieldId(e.getSource(),0)); }); 
+                 edit.focusedProperty().addListener((a,o,n) -> kentta = getFieldId(edit,kentta)); 
+             }   
+    }
+    
+    
+    /**
+     * Välineen tietojen näyttäminen.
+     */
+    protected void naytaValine() {
+        valineNakyy = listChooserValineet.getSelectedObject();
+        if (valineNakyy == null) return;
+        ValineenTiedotController.naytaValine(edits, valineNakyy);
+    }
+    
+    
+    
+    /**
+     * Välineen tietojen muokkaaminen
+     */
+    private void muokkaaValine(int i) {
+        if (valineNakyy == null) return;
+        try {
+            Valine valine;
+            valine = ValineenTiedotController.kysyValine(null, valineNakyy.clone(), i);
+            if (valine == null) return;
+            urheiluseurarekisteri.korvaaTaiLisaa(valine);
+            hae(valine.getValineID());
+        } catch (CloneNotSupportedException e) { 
+            //
+        } catch (SailoException e) { 
+            Dialogs.showMessageDialog(e.getMessage()); 
+        } 
+    }
+    
     
     /**
      * Välineen lisäys, luodaan väline jota voidaan muokata
      */
-    private String valineenLisays() {
+    private void valineenLisays() {
         Valine valine = new Valine();
-        valine.rekisteroi();
-        valine.taytaValine();
+        valine = ValineenTiedotController.kysyValine(null, valine, 1); 
+        if (valine == null) return; 
+        valine.rekisteroi(); 
         urheiluseurarekisteri.lisaa(valine);
         try {
             urheiluseurarekisteri.tallennaValineet();
-        } catch (SailoException ex) {
-            Dialogs.showMessageDialog("Error! " + ex.getMessage());
-            return ex.getMessage();
+        } catch (SailoException e) {
+            e.printStackTrace();
         }
         hae(valine.getValineID());
-        return null;
     }
     
     
     /**
      * Välineen hakeminen
-     * param nro välineen numero
+     * @param nro välineen numero
      */
-    private void hae(int nro) {
+    protected void hae(int nro) {
         listChooserValineet.clear();
         int in = 0;
-        for (int i=0; i<urheiluseurarekisteri.getValineita(); i++) {
-            Valine valine = urheiluseurarekisteri.annaValine(i);
-            if (valine.getValineID() == nro) in = i;
-            listChooserValineet.add(valine.getValineenNimi(), valine);
+        Collection<Valine> valineet; 
+        try {
+            valineet = urheiluseurarekisteri.etsiValine("", 1); 
+            int i = 0; 
+            for (Valine valine:valineet) { 
+                if (valine.getValineID() == nro) in = i; 
+                listChooserValineet.add(valine.getValineenNimi(), valine); 
+                i++; 
+            }
         }
-        listChooserValineet.setSelectedIndex(in);
+        catch (SailoException ex) {
+            Dialogs.showMessageDialog("Välineen haku ei onnistu! " + ex.getMessage());  
+        }
+        listChooserValineet.getSelectionModel().select(in);
     }
     
     
@@ -102,23 +174,31 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
      * Suljetaan ohjelma
      */
     private void lopeta() {
+        valineenTallennus();
         System.exit(0);
     }
     
-    /**
-     * Välineiden tietojen muokkaus
-     */
-    private void valineenMuokkaus() {
-        Dialogs.showMessageDialog("Ei osata vielä muokata");
-        
-    }
     
     /**
      * Välineen poisto
      */
     private void valineenPoisto() {
-        Dialogs.showMessageDialog("Ei osata vielä poistaa");
-        
+        Valine valine = valineNakyy;
+        if (valine == null) return;
+        if (!Dialogs.showQuestionDialog("Välineen poistaminen", "Poistetaanko väline: " + valine.getValineenNimi(), "Kyllä", "Ei") )
+            return;
+        int vid = valine.getValineID();
+        urheiluseurarekisteri.poistaLaina(vid);
+        urheiluseurarekisteri.poista(valine);
+        try {
+            urheiluseurarekisteri.tallennaValineet();
+            urheiluseurarekisteri.tallennaLainat();
+        } catch (SailoException e) {
+            e.printStackTrace();
+        }
+        int indeksi = listChooserValineet.getSelectedIndex();
+        hae(0);
+        listChooserValineet.setSelectedIndex(indeksi);
     }
     
     
@@ -127,7 +207,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
      */
     private String valineenTallennus() {
         try {
-            urheiluseurarekisteri.tallenna();
+            urheiluseurarekisteri.hiljainenTallenna();
             return null;
         } catch (SailoException ex) {
             Dialogs.showMessageDialog("Error! " + ex.getMessage());
@@ -217,6 +297,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
     @Override
     public void setDefault(Urheiluseurarekisteri urheiluseurarekisteri) {
         this.urheiluseurarekisteri = urheiluseurarekisteri;
+        alusta();
         lueTiedostosta();
     }
 }

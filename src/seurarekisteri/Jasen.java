@@ -8,10 +8,10 @@ import fi.jyu.mit.ohj2.Mjonot;
  * Ylläpitää jasenID:tä, tietää jäsenen kentät (nimi, sotu, osoite, jne.), 
  * osaa tarkistaa tietyn kentän oikeellisuuden, jne.
  * @author jailklee
- * @version 06 Apr 2021
+ * @version 14 Apr 2021
  *
  */
-public class Jasen {
+public class Jasen implements Cloneable{
     private int jasenID;
     private static int seuraavaNro = 1;
     private String nimi = "";
@@ -47,11 +47,156 @@ public class Jasen {
     
     
     /**
+     * Jäsenen kloonaus
+     * @return Object kloonattu verio jäsenestä
+     * @example
+     * <pre name="test">
+     * #THROWS CloneNotSupportedException 
+     *   Jasen jasen = new Jasen();
+     *   jasen.parse("   1  |  Ville Vallaton   | 1111111");
+     *   Jasen clone = jasen.clone();
+     *   clone.toString() === jasen.toString();
+     *   jasen.parse("   4  |  Ville Vallallinen   | 2222222");
+     *   clone.toString().equals(jasen.toString()) === false;
+     * </pre>
+     */
+    @Override
+    public Jasen clone() throws CloneNotSupportedException {
+        Jasen eka;
+        eka = (Jasen) super.clone();
+        return eka;
+    }
+    
+    
+    /**
      * Jäsenen tunnuksen palautus
      * @return jäsenen ID
      */
     public int getJasenID() {
         return jasenID;
+    }
+    
+    
+    /**
+     * Kenttien määrän palauttaminen
+     * @return kenttien lkm
+     */
+    public int getKentat() {
+        return 9;
+    }
+    
+    
+    /**
+     * Ensimmäisen kentän palauttaminen
+     * @return 1. kenttä
+     */
+    public int ekaKentta() {
+        return 1;
+    }
+    
+    
+    /**
+     * Alustetaan jäsenen merkkijono-attribuuti tyhjiksi jonoiksi
+     * ja jasenID = 0.
+     */
+    public Jasen() {
+        //
+    } 
+    
+    
+    /**
+     * Antaa i:n kentän sisällön merkkijonona 
+     * @param i monenenko kentän sisältö palautetaan
+     * @return kentän sisältö merkkijonona 
+     */
+    public String anna(int i) {
+        switch (i) {
+        case 0: return "" + jasenID;
+        case 1: return "" + nimi;
+        case 2: return "" + sotu;
+        case 3: return "" + osoite;
+        case 4: return "" + postinro;
+        case 5: return "" + postitoimipaikka;
+        case 6: return "" + puhnro;
+        case 7: return "" + sahkoposti;
+        case 8: return "" + muuta;
+        default: return "höh";
+        }
+    }
+    
+    
+    /**
+     * Asettaa i:n kentän arvoksi parametrina tuodun merkkijonon arvon
+     * @param i kuinka monennen kentän arvo asetetaan
+     * @param jono jonoa joka asetetaan kentän arvoksi
+     * @return null onnistuessa, muuten virheilmoitus
+     * @example
+     * <pre name="test">
+     *   Jasen jasen = new Jasen();
+     *   jasen.aseta(1,"Jouko Joukkio") === null;
+     *   jasen.aseta(4,"hemmo") === "Postinumerossa on vain numeroita!";
+     *   jasen.aseta(4,"12345") === null; 
+     *   jasen.aseta(6,"hippi") === "Puhelinnumerossa on vain numeroita!";
+     *   jasen.aseta(6,"12345") === null;
+     * </pre>
+     */
+    public String aseta(int i, String jono) {
+        String tjono = jono.trim();
+        StringBuffer sb = new StringBuffer(tjono);
+        switch (i) {
+        case 0:
+            setJasenID(Mjonot.erota(sb, '§', getJasenID()));
+            return null;
+        case 1:
+            nimi = tjono;
+            return null;
+        case 2:
+            sotu = tjono;
+            return null;
+        case 3:
+            osoite = tjono;
+            return null;
+        case 4:
+            if (tjono.matches("[0-9]+") == false) return "Postinumerossa on vain numeroita!";
+            postinro = tjono;
+            return null;
+        case 5:
+            postitoimipaikka = tjono;
+            return null;
+        case 6:
+            if (tjono.matches("[0-9]+") == false) return "Puhelinnumerossa on vain numeroita!";
+            puhnro = tjono;
+            return null;
+        case 7:
+            sahkoposti = tjono;
+            return null;
+        case 8:
+            muuta = tjono;
+            return null;
+        default:
+            return "";
+        }
+    }
+    
+    
+    /**
+     * Palauttaa i:tta jäsenen kenttää vastaavan kysymyksen
+     * @param i mikä kysymys palautetaan
+     * @return kysymys
+     */
+    public String getKysymys(int i) {
+        switch (i) {
+        case 0: return "Jasen ID";
+        case 1: return "Nimi";
+        case 2: return "Hetu";
+        case 3: return "Osoite";
+        case 4: return "Postinumero";
+        case 5: return "Postitoimipaikka";
+        case 6: return "Puhelinnumero";
+        case 7: return "Email";
+        case 8: return "Muuta";
+        default: return "höh";
+        }
     }
     
     
@@ -128,6 +273,24 @@ public class Jasen {
     public String getNimi() {
         return nimi;
     }  
+    
+    
+    /**
+     * Palautetaan postinro
+     * @return postinro
+     */
+    public String getPostinro() {
+        return postinro;
+    }
+    
+    
+    /**
+     * Palautetaan puhelinnro.
+     * @return puhelinro
+     */
+    public String getPuhelinNro() {
+        return puhnro;
+    }
     
     
     /**

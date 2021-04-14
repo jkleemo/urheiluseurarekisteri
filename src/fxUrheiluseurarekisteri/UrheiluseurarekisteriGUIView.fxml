@@ -8,7 +8,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
@@ -20,19 +19,18 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxUrheiluseurarekisteri.UrheiluseurarekisteriGUIController">
    <bottom>
-      <HBox prefHeight="158.0" prefWidth="431.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="44.0" prefWidth="431.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button onAction="#handleUusiJasen" prefHeight="25.0" prefWidth="93.0" text="_Uusi jäsen">
+            <Button onAction="#handleUusiJasen" prefHeight="25.0" prefWidth="79.0" text="_Uusi jäsen">
                <tooltip>
                   <Tooltip text="Uuden jäsenen lisääminen" />
                </tooltip>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handlePalautukseen" prefHeight="25.0" prefWidth="95.0" text="Palautukseen" />
-            <Button onAction="#handleLainaukseen" text="_Lainaukseen">
+            <Button onAction="#handleLainaukseen" prefHeight="25.0" prefWidth="86.0" text="_Lainaukseen">
                <tooltip>
                   <Tooltip text="Siirry lainausikkunaan" />
                </tooltip></Button>
-            <TextArea fx:id="textAreaNayta" prefHeight="74.0" prefWidth="165.0" />
+            <Button mnemonicParsing="false" onAction="#handlePalautukseen" prefHeight="25.0" prefWidth="90.0" text="Palautukseen" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -73,7 +71,7 @@
             </VBox>
          </bottom>
          <top>
-            <TextField onAction="#handleHaku" prefHeight="29.0" prefWidth="170.0" promptText="Hae..." BorderPane.alignment="CENTER">
+            <TextField fx:id="haettava" onAction="#handleHaku" prefHeight="29.0" prefWidth="170.0" promptText="Hae..." BorderPane.alignment="CENTER">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -85,9 +83,9 @@
       </BorderPane>
    </left>
    <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="scrollPaneJasen" fitToWidth="true" BorderPane.alignment="CENTER">
          <content>
-            <GridPane>
+            <GridPane fx:id="gridPaneJasen">
               <columnConstraints>
                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />

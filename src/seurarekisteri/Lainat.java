@@ -17,13 +17,14 @@ import java.util.NoSuchElementException;
 /**
  * Pitää huolen lainoista.
  * @author jailklee
- * @version 07 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class Lainat implements Iterable<Laina> {
     private List<Laina> alkiot = new ArrayList<Laina>();
     private String tiedostonPN = "lainat";
     private boolean muutettu = false;
+    
     
     /**
      * Oletusmuodostaja
@@ -81,6 +82,54 @@ public class Lainat implements Iterable<Laina> {
     
     
     /**
+     * Lainan poisto välineen id:llä.
+     * @param vid välineID
+     */
+    public void poistaLaina(int vid) {
+        for (int i=0; i<alkiot.size(); i++) {
+            if (alkiot.get(i).getValineID() == vid) poista(alkiot.get(i).getLainaID());
+        }
+    }
+    
+    
+    /**
+     * Jäsenen lainojen poistaminen
+     * @param jid jäsenID
+     */
+    public void poistaJasenenLainat(int jid) {
+        for (int i=0; i<alkiot.size(); i++) {
+            if (alkiot.get(i).getJasenID() == jid) poista(alkiot.get(i).getLainaID());
+        }
+    }
+    
+    
+    /** 
+     * Lainan poistaminen
+     * @param id lainanID
+     * @return 1 jos poistettiin, 0 jos ei löydy
+     */
+    public int poista(int id) { 
+        int ind = etsiId(id); 
+        if (ind < 0) return 0; 
+        alkiot.remove(ind);
+        muutettu = true; 
+        return 1; 
+    } 
+    
+    
+    /**
+     * Lainan id:n etsiminen
+     * @param id id, jota etsitään
+     * @return id lainan id
+     */
+    public int etsiId(int id) { 
+        for (int i = 0; i<alkiot.size(); i++) 
+            if (id == alkiot.get(i).getLainaID()) return i; 
+         return -1; 
+    } 
+    
+    
+    /**
      * Tiedoston nimen palauttaminen
      * @return tallennustiedostontiedoston nimi
      */
@@ -112,7 +161,7 @@ public class Lainat implements Iterable<Laina> {
      * @throws SailoException talletuksen epäonnistuessa
      * Tiedoston muoto:
      * <pre>
-     * 10
+     * 3
      * 1|1|6
      * 2|1|3
      * 3|1|10
@@ -277,7 +326,6 @@ public class Lainat implements Iterable<Laina> {
      *   Laina laina2 = new Laina(2,2); laina2.parse("2|2|2"); 
      *   Laina laina3 = new Laina(3,3); laina3.parse("3|3|3");  
      *   lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3);
-     *   // TODO: toistaiseksi palauttaa kaikki lainat 
      * </pre> 
      */ 
     @SuppressWarnings("unused")

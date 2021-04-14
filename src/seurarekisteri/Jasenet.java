@@ -12,10 +12,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import fi.jyu.mit.ohj2.WildChars;
+
 /**
  * Jäsenien lisääminen seuraan
  * @author jailklee
- * @version 06 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class Jasenet implements Iterable<Jasen> {
@@ -38,6 +40,66 @@ public class Jasenet implements Iterable<Jasen> {
      */
     public int getLkm() {
         return lkm;
+    }
+    
+    
+    /**
+     * Jäsenen palauttaminen
+     * @param id jasenID
+     * @return palautetaan jäsen tai null
+     */
+    public Jasen getJasen(int id) {
+        for (int i=0; i<alkiot.length; i++) {
+            if (alkiot[i].getJasenID() == id) return alkiot[i];
+        }
+        return null;
+    }
+    
+    
+    /** 
+     * Jäsenen poisto
+     * @param id poistettavan jäsenen jäsenID 
+     * @return 1 jos poistettiin, 0 jos ei löydy
+     */
+    public int poista(int id) { 
+        int ind = etsiId(id); 
+        if (ind < 0) return 0; 
+        lkm--; 
+        for (int i = ind; i < lkm; i++) 
+            alkiot[i] = alkiot[i + 1]; 
+        alkiot[lkm] = null; 
+        muutettu = true; 
+        return 1; 
+    }
+    
+    
+    /**
+     * Jäsenen id:n etsiminen
+     * @param id mitä etsitään
+     * @return id jäsenen id
+     */
+    public int etsiId(int id) { 
+        for (int i = 0; i<lkm; i++) 
+            if (id == alkiot[i].getJasenID()) return i; 
+         return -1; 
+    } 
+    
+    
+    /**
+     * Korvaa jäsenen tietorakenteessa
+     * @param jasen lisättävän jäsenen viite
+     * @throws SailoException tietorakenteen ollessa täynnä
+     */
+    public void korvaaTaiLisaa(Jasen jasen) throws SailoException {
+        int id = jasen.getJasenID();
+        for (int i = 0; i < lkm; i++) {
+            if (alkiot[i].getJasenID() == id) {
+                alkiot[i] = jasen;
+                muutettu = true;
+                return;
+            }
+        }
+        lisaa(jasen);
     }
     
     
@@ -114,7 +176,7 @@ public class Jasenet implements Iterable<Jasen> {
      * @throws SailoException talletus epäonnistuu
      * Tiedoston muoto:
      * <pre>
-     * 20
+     * 10
      * 1|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000090|jj@jj.fi|
      * 2|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000010|jj@jj.fi|
      * </pre>
@@ -249,14 +311,16 @@ public class Jasenet implements Iterable<Jasen> {
      *   Jasen jouko2 = new Jasen(); jouko2.parse("2|Jouko Joukkio||22222-2222|"); 
      *   Jasen jouko3 = new Jasen(); jouko3.parse("3|Hemmu Heppola|333333-33333||2222222|Jyväsmetsä");  
      *   jasenet.lisaa(jouko1); jasenet.lisaa(jouko2); jasenet.lisaa(jouko3);
-     *   // TODO: toistaiseksi palauttaa kaikki jäsenet 
      * </pre> 
      */ 
-    @SuppressWarnings("unused")
     public Collection<Jasen> etsi(String hakuehto, int k) { 
+        String ehto = "*"; 
+        if ( hakuehto != null && hakuehto.length() > 0 ) ehto = hakuehto; 
+        int hk = k; 
+        if ( hk < 0 ) hk = 1;
         Collection<Jasen> loytyneet = new ArrayList<Jasen>(); 
         for (Jasen jasen : this) { 
-            loytyneet.add(jasen); 
+            if (WildChars.onkoSamat(jasen.anna(hk), ehto)) loytyneet.add(jasen);   
         } 
         return loytyneet; 
     }

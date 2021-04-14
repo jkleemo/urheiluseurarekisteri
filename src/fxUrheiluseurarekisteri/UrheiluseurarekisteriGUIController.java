@@ -2,17 +2,19 @@ package fxUrheiluseurarekisteri;
 
 import java.awt.Desktop;
 
-import fi.jyu.mit.fxgui.Dialogs;
-import fi.jyu.mit.fxgui.ListChooser;
-import fi.jyu.mit.fxgui.ModalController;
-import fi.jyu.mit.fxgui.TextAreaOutputStream;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import static fxUrheiluseurarekisteri.JasenenTiedotController.getFieldId;
+import fi.jyu.mit.fxgui.Dialogs;
+import fi.jyu.mit.fxgui.ListChooser;
+import fi.jyu.mit.fxgui.ModalController;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import seurarekisteri.Urheiluseurarekisteri;
 import seurarekisteri.Jasen;
 import seurarekisteri.SailoException;
@@ -20,12 +22,14 @@ import seurarekisteri.SailoException;
 /**
  * Pääikkunan kontrolleri
  * @author jailklee
- * @version 07 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class UrheiluseurarekisteriGUIController {
     @FXML private ListChooser<Jasen> listChooserJasenisto;
-    @FXML private TextArea textAreaNayta;
+    @FXML private TextField haettava;
+    @FXML private ScrollPane scrollPaneJasen;
+    @FXML private GridPane gridPaneJasen;
     
     
     
@@ -41,7 +45,7 @@ public class UrheiluseurarekisteriGUIController {
 
     @FXML
     void handleMuokkaaJTietoja() {
-        jasenenMuokkaus();
+        jasenenMuokkaus(1);
     }
     
     @FXML
@@ -68,7 +72,7 @@ public class UrheiluseurarekisteriGUIController {
 
     @FXML
     void handleHaku() {
-        hakemaan();
+        hae(0);
     }
     
 
@@ -82,12 +86,50 @@ public class UrheiluseurarekisteriGUIController {
     private Urheiluseurarekisteri urheiluseurarekisteri;
     private Jasen jasenNakyy;
     private static int jasenNro;
+    private TextField edits[];
+    private int kentta = 0;
     
     /**
      * Tiedoston avaaminen
      */
     public void avaa() {
+        alusta();
         lueTiedosto();
+    }
+    
+    
+    /**
+     * Pääikkunan alustaminen
+     */
+    protected void alusta() {
+        listChooserJasenisto.clear();
+        listChooserJasenisto.addSelectionListener(e -> naytaJasen());
+        edits = JasenenTiedotController.luoKentat(gridPaneJasen); 
+        for (TextField edit: edits) 
+             if (edit != null) { 
+                 edit.setEditable(false); 
+                 edit.setOnMouseClicked(e -> { if ( e.getClickCount() > 1 ) muokkaaJasen(getFieldId(e.getSource(),0)); }); 
+                 edit.focusedProperty().addListener((a,o,n) -> kentta = getFieldId(edit,kentta)); 
+             }   
+    }
+    
+    
+    /**
+     * Jäsentietojen muokkaaminen
+     */
+    private void muokkaaJasen(int i) {
+        if (jasenNakyy == null) return;
+        try {
+            Jasen jasen;
+            jasen = JasenenTiedotController.kysyJasen(null, jasenNakyy.clone(), i);
+            if ( jasen == null ) return;
+            urheiluseurarekisteri.korvaaTaiLisaa(jasen);
+            hae(jasen.getJasenID());
+        } catch (CloneNotSupportedException e) { 
+            //
+        } catch (SailoException e) { 
+            Dialogs.showMessageDialog(e.getMessage()); 
+        } 
     }
     
     
@@ -121,39 +163,20 @@ public class UrheiluseurarekisteriGUIController {
     
     
     /**
-     * Jäsenen haku listaan
-     * param nro jäsenen numero
-     */
-    private void hae(int nro) {
-        listChooserJasenisto.clear();
-        int in = 0;
-        for (int i=0; i<urheiluseurarekisteri.getJasenia(); i++) {
-            Jasen jasen = urheiluseurarekisteri.annaJasen(i);
-            if (jasen.getJasenID() == nro) in = i;
-            listChooserJasenisto.add(jasen.getNimi(), jasen);
-        }
-        listChooserJasenisto.setSelectedIndex(in);
-        listChooserJasenisto.addSelectionListener(e -> naytaJasen());
-    }
-    
- 
-    
-    /**
      * Jäsenen lisäys, luodaan jäsen jota voidaan muokata
      */
-    private String jasenenLisays() {
+    private void jasenenLisays() {
         Jasen jasen = new Jasen();
-        jasen.rekisteroi();
-        jasen.jasenenTaytto();
+        jasen = JasenenTiedotController.kysyJasen(null, jasen, 1); 
+        if ( jasen == null ) return; 
+        jasen.rekisteroi(); 
         urheiluseurarekisteri.lisaa(jasen);
         try {
             urheiluseurarekisteri.tallennaJasenet();
-        } catch (SailoException ex) {
-            Dialogs.showMessageDialog("Error! " + ex.getMessage());
-            return ex.getMessage();
+        } catch (SailoException e) {
+            e.printStackTrace();
         }
         hae(jasen.getJasenID());
-        return null;
     }
     
     
@@ -163,10 +186,7 @@ public class UrheiluseurarekisteriGUIController {
     private void naytaJasen() {
         jasenNakyy = listChooserJasenisto.getSelectedObject();
         if (jasenNakyy == null) return;
-        textAreaNayta.setText("");
-        try (PrintStream os = TextAreaOutputStream.getTextPrintStream(textAreaNayta)) {
-            tulosta(os,jasenNakyy); 
-        }
+        JasenenTiedotController.naytaJasen(edits, jasenNakyy);
     } 
     
     
@@ -174,31 +194,84 @@ public class UrheiluseurarekisteriGUIController {
      * Ohjelman sulkeminen
      */
     private void lopeta() {
+        jasenenTallennus();
         System.exit(0);
     }
+    
     
     /**
      * Jäsenen tietojen muokkaaminen
      */
-    private void jasenenMuokkaus() {
-        Dialogs.showMessageDialog("Ei osata vielä muokata");
+    private void jasenenMuokkaus(int i) {
+        if (jasenNakyy == null) return;
+        try {
+            Jasen jasen;
+            jasen = JasenenTiedotController.kysyJasen(null, jasenNakyy.clone(), i);
+            if ( jasen == null ) return;
+            urheiluseurarekisteri.korvaaTaiLisaa(jasen);
+            hae(jasen.getJasenID());
+        } catch (CloneNotSupportedException e) { 
+            //
+        } catch (SailoException e) { 
+            Dialogs.showMessageDialog(e.getMessage()); 
+        } 
         
     }
+    
     
     /**
      * Jäsenen poisto
      */
     private void jasenenPoisto() {
-        Dialogs.showMessageDialog("Ei osata vielä poistaa");
+        Jasen jasen = jasenNakyy;
+        if ( jasen == null ) return;
+        if ( !Dialogs.showQuestionDialog("Jasenen poisto", "Haluatko varmasti poistaa jäsenen " + jasen.getJasenID()+ ": " + jasen.getNimi(), "Kyllä", "Ei") )
+            return;
+        urheiluseurarekisteri.poistaJasenenLainat(jasen.getJasenID());
+        urheiluseurarekisteri.poista(jasen);
+        try {
+            urheiluseurarekisteri.tallennaJasenet();
+            urheiluseurarekisteri.tallennaLainat();
+        } catch (SailoException e) {
+            e.printStackTrace();
+        }
+        int indeksi = listChooserJasenisto.getSelectedIndex();
+        hae(0);
+        listChooserJasenisto.setSelectedIndex(indeksi);
         
     }
     
+    
     /**
-     * Hakupalkin toiminnot
+     * Hakee jäsenen tiedot listaan
+     * @param numero jäsenen nro
      */
-    private void hakemaan() {
-        //ei toimi vielä
+    protected void hae(int numero) {
+        int jasNro = numero;
+        if (jasNro <= 0) {
+            Jasen kohdalla = jasenNakyy;
+            if (kohdalla != null) jasNro = kohdalla.getJasenID();
+        }
+        String hehto = haettava.getText();
+        if (hehto.indexOf('*')<0) hehto = "*" + hehto + "*";
+        listChooserJasenisto.clear();
+        int in = 0;
+        Collection<Jasen> jasenet; 
+        try {
+            jasenet = urheiluseurarekisteri.etsi(hehto, 1);
+            int i = 0; 
+            for (Jasen jasen:jasenet) { 
+                if (jasen.getJasenID() == numero) in = i; 
+                listChooserJasenisto.add(jasen.getNimi(), jasen); 
+                i++; 
+            }
+        }
+        catch (SailoException ex) {
+            Dialogs.showMessageDialog("Jäsenen haku ei onnistu! " + ex.getMessage());  
+        }
+        listChooserJasenisto.getSelectionModel().select(in);
     }
+    
     
     /**
      * Jäsenen tietojen tallennus

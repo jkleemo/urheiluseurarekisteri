@@ -44,7 +44,6 @@
 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
 <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 </rowConstraints>
 <children>
 <Label text="Väline:" />
@@ -53,10 +52,8 @@
 <TextField text="Sukset" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
 <TextField text="Fischer" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
 <TextField text="2019" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                  <TextField text="Iso naarmu pohjassa" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <TextField text="20.1.2021" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <Label text="Muuta:" GridPane.rowIndex="3" />
-                  <Label text="Vapaana/Palautettava:" GridPane.rowIndex="4" />
+                  <TextField text="20.1.2021" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label text="Vapaana/Palautettava:" GridPane.rowIndex="3" />
 </children>
 <opaqueInsets>
 <Insets left="10.0" top="10.0" />

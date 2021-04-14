@@ -12,7 +12,7 @@ import seurarekisteri.SailoException;
 
 /**
  * @author jailklee
- * @version 07 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class SeuraLainatController implements ModalControllerInterface<Urheiluseurarekisteri> {
@@ -29,12 +29,30 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
     }    
     //<==============================================================>
     private Urheiluseurarekisteri urheiluseurarekisteri;
+    private Laina lainaNakyy;
     
     /**
-     * TODO: palautusominaisuus ei vielä toimi
+     * Lainan palauttaminen
      */
     private void palauta() {
-        Dialogs.showMessageDialog("Ei osata vielä palauttaa lainoja!");
+        lainaNakyy = listChooserLainat.getSelectedObject();
+        Laina laina = lainaNakyy;
+        int vid = lainaNakyy.getValineID();
+        Valine valine = urheiluseurarekisteri.getValine(vid);
+        if (laina == null) return;
+        if (!Dialogs.showQuestionDialog("Palautus", "Haluatko varmasti palauttaa välineen?", "Kyllä", "Ei") )
+            return;
+        urheiluseurarekisteri.poista(laina);
+        valine.setLainassa("Ei lainassa");
+        try {
+            urheiluseurarekisteri.tallennaLainat();
+            urheiluseurarekisteri.tallennaValineet();
+        } catch (SailoException e) {
+            e.printStackTrace();
+        }
+        int indeksi = listChooserLainat.getSelectedIndex();
+        hae();
+        listChooserLainat.setSelectedIndex(indeksi);
     }
     
     
@@ -42,6 +60,7 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
      * Palataan takaisin pääikkunaan
      */
     private void takaisin() {
+        tallenna();
         ModalController.closeStage(listChooserLainat);
     }
     
@@ -67,6 +86,29 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
             }
         }
         listChooserLainat.setSelectedIndex(il);
+    }
+    
+    
+    /**
+     * Muutosten tallentaminen
+     */
+    private String tallenna() {
+        try {
+            urheiluseurarekisteri.tallennaLainat();
+            return null;
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Tallennus epäonnistui! " + ex.getMessage());
+            return ex.getMessage();
+        }
+    }
+    
+    
+    /**
+     * Lainan tietojen näyttäminen
+     */
+    protected void naytaLaina() {
+        lainaNakyy = listChooserLainat.getSelectedObject();
+        if (lainaNakyy == null) return;
     }
     
     

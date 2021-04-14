@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 /**
  * Urheiluseuran välineiden lisääminen
  * @author jailklee
- * @version 06 Apr 2021
+ * @version 14 Apr 2021
  *
  */
 public class Valineet implements Iterable<Valine> {
@@ -34,6 +34,19 @@ public class Valineet implements Iterable<Valine> {
     
     
     /**
+     * Välineen palauttaminen
+     * @param vid välineID
+     * @return palautetaan väline tai null
+     */
+    public Valine getValine(int vid) {
+        for (int i=0; i<alkiot.size(); i++) {
+            if (alkiot.get(i).getValineID() == vid) return alkiot.get(i);
+        }
+        return null;
+    }
+    
+    
+    /**
      * Palauttaa välineiden lukumäärän
      * @return välineiden lkm
      */
@@ -43,11 +56,29 @@ public class Valineet implements Iterable<Valine> {
     
     
     /**
+     * Korvaa välineen tietorakenteessa.  Ottaa välineen omistukseensa.
+     * @param valine lisätäävän välineen viite.  Huom tietorakenne muuttuu omistajaksi
+     * @throws SailoException tietorakenteen ollessa täynnä
+     */
+    public void korvaaTaiLisaa(Valine valine) throws SailoException {
+        int id = valine.getValineID();
+        for (int i=0; i<alkiot.size(); i++) {
+            if (alkiot.get(i).getValineID() == id) {
+                alkiot.set(i, valine);
+                muutettu = true;
+                return;
+            }
+        }
+        lisaa(valine);
+    }
+    
+    
+    /**
      * Tiedostoon tallentaminen
      * @throws SailoException tallennuksen epäonnistuessa
      * Tiedoston muoto:
      * <pre>
-     * 10
+     * 4
      * 1|Sukset|Fischer|2018|1.1.2022|
      * 2|Sukset|Fischer|2018|1.1.2022|
      * 3|Sukset|Fischer|2018|1.1.2022|
@@ -105,6 +136,32 @@ public class Valineet implements Iterable<Valine> {
         alkiot.add(valine);
         muutettu = true;
     }
+    
+    
+    /** 
+     * Välineen poistaminen
+     * @param id välineID
+     * @return 1 jos poistettiin, 0 jos ei löydy 
+     */
+    public int poista(int id) { 
+        int ind = etsiId(id); 
+        if (ind < 0) return 0; 
+        alkiot.remove(ind);
+        muutettu = true; 
+        return 1; 
+    } 
+    
+    
+    /**
+     * Välineen id:n etsiminen
+     * @param id id, joka etsitään
+     * @return id löytyneen välineen indeksi tai -1 jos ei löydy
+     */
+    public int etsiId(int id) { 
+        for (int i = 0; i<alkiot.size(); i++) 
+            if (id == alkiot.get(i).getValineID()) return i; 
+         return -1; 
+    } 
     
     
     /**
@@ -268,7 +325,6 @@ public class Valineet implements Iterable<Valine> {
      *   Valine pallo2 = new Valine(); pallo2.parse("2|Jalkapallo||Select|"); 
      *   Valine pallo3 = new Valine(); pallo3.parse("3|Sauvat|One way||2018|");  
      *   valineet.lisaa(pallo1); valineet.lisaa(pallo2); valineet.lisaa(pallo3);
-     *   // TODO: toistaiseksi palauttaa kaikki välineet
      * </pre> 
      */ 
     @SuppressWarnings("unused")
