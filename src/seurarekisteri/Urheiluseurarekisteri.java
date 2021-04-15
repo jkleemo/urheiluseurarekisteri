@@ -321,9 +321,11 @@ public class Urheiluseurarekisteri {
     /**
      * Jäsenen kaikkien lainojen poistaminen
      * @param jid jasenID
+     * @return onko vai ei
      */
-    public void poistaJasenenLainat(int jid) {
-        lainat.poistaJasenenLainat(jid);
+    public int palautaEkaLainat(int jid) {
+        if (lainat.palautaEnsinLainat(jid) == 1) return 1;
+        return 0;
     }
     
     

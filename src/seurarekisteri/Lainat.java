@@ -93,13 +93,31 @@ public class Lainat implements Iterable<Laina> {
     
     
     /**
-     * Jäsenen lainojen poistaminen
+     * Palauta ensin!
      * @param jid jäsenID
+     * @return onko vai ei
      */
-    public void poistaJasenenLainat(int jid) {
+    public int palautaEnsinLainat(int jid) {
         for (int i=0; i<alkiot.size(); i++) {
-            if (alkiot.get(i).getJasenID() == jid) poista(alkiot.get(i).getLainaID());
+            if (alkiot.get(i).getJasenID() == jid) {
+                palautaEnsin(alkiot.get(i).getLainaID());
+                return 1;
+            }
         }
+        return 0;
+    }
+    
+    
+    /** 
+     * Lainan poistaminen
+     * @param id lainanID
+     * @return 1 jos poistettiin, 0 jos ei löydy
+     */
+    public int palautaEnsin(int id) { 
+        int ind = etsiId(id); 
+        if (ind < 0) return 0; 
+        muutettu = true; 
+        return 1; 
     }
     
     

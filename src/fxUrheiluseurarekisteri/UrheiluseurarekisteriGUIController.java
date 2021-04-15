@@ -227,7 +227,10 @@ public class UrheiluseurarekisteriGUIController {
         if ( jasen == null ) return;
         if ( !Dialogs.showQuestionDialog("Jasenen poisto", "Haluatko varmasti poistaa jäsenen " + jasen.getJasenID()+ ": " + jasen.getNimi(), "Kyllä", "Ei") )
             return;
-        urheiluseurarekisteri.poistaJasenenLainat(jasen.getJasenID());
+        if (urheiluseurarekisteri.palautaEkaLainat(jasen.getJasenID()) == 1) {
+            Dialogs.showMessageDialog("Palauta ensin lainat!");
+            return;
+        }
         urheiluseurarekisteri.poista(jasen);
         try {
             urheiluseurarekisteri.tallennaJasenet();
