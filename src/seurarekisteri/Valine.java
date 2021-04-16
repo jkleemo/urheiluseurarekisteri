@@ -217,6 +217,11 @@ public class Valine implements Cloneable{
     /**
      * Palautetaan väline.
      * @return välineen nimi
+     * <pre name="test">
+     *   Valine valine = new Valine();
+     *   valine.taytaValine();
+     *   valine.getValineenNimi() =R= "Sukset";
+     * </pre>
      */
     public String getValineenNimi() {
         return valineenNimi;
@@ -226,6 +231,11 @@ public class Valine implements Cloneable{
     /**
      * Hankintavuoden palauttaminen
      * @return hankintavuosi
+     * <pre name="test">
+     *   Valine valine = new Valine();
+     *   valine.taytaValine();
+     *   valine.getHankintavuosi() =R= "2018";
+     * </pre>
      */
     public String getHankintavuosi() {
         return hankintavuosi;
@@ -235,6 +245,11 @@ public class Valine implements Cloneable{
     /**
      * Välineen lainastatus?
      * @return lainastatus
+     * <pre name="test">
+     *   Valine valine = new Valine();
+     *   valine.taytaValine();
+     *   valine.getLainassa() =R= "Ei lainassa";
+     * </pre>
      */
     public String getLainassa() {
         return palautettava;

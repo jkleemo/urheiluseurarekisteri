@@ -2,8 +2,6 @@ package seurarekisteri;
 
 import java.util.Collection;
 
-import fi.jyu.mit.fxgui.Dialogs;
-
 
 /**
  * Urheiluseurarekisteri-luokka
@@ -18,6 +16,15 @@ import fi.jyu.mit.fxgui.Dialogs;
  *  private Jasen jasen2;
  *  private int jid1;
  *  private int jid2;
+ *  private Valine valine1;
+ *  private Valine valine2;
+ *  private int vid1;
+ *  private int vid2;
+ *  private Laina laina1;
+ *  private Laina laina2;
+ *  private int lid1;
+ *  private int lid2;
+ *  
  *  
  *  public void alustaUrheiluseurarekisteri() {
  *    urheiluseurarekisteri = new Urheiluseurarekisteri();
@@ -25,9 +32,21 @@ import fi.jyu.mit.fxgui.Dialogs;
  *    jasen2 = new Jasen(); jasen2.jasenenTaytto(); jasen2.rekisteroi();
  *    jid1 = jasen1.getJasenID();
  *    jid2 = jasen2.getJasenID();
+ *    valine1 = new Valine(); valine1.taytaValine(); valine1.rekisteroi();
+ *    valine2 = new Valine(); valine2.taytaValine(); valine2.rekisteroi();
+ *    vid1 = valine1.getValineID();
+ *    vid2 = valine2.getValineID();
+ *    laina1 = new Laina(jid1, vid1); laina1.rekisteroi();
+ *    laina2 = new Laina(jid2, vid2); laina2.rekisteroi();
+ *    lid1 = laina1.getLainaID();
+ *    lid2 = laina2.getLainaID(); 
  *    try {
  *    urheiluseurarekisteri.lisaa(jasen1);
  *    urheiluseurarekisteri.lisaa(jasen2);
+ *    urheiluseurarekisteri.lisaa(valine1);
+ *    urheiluseurarekisteri.lisaa(valine2);
+ *    urheiluseurarekisteri.lisaa(laina1);
+ *    urheiluseurarekisteri.lisaa(laina2);
  *    } catch ( Exception e) {
  *       System.err.println(e.getMessage());
  *    }
@@ -52,6 +71,12 @@ public class Urheiluseurarekisteri {
     /**
      * Viimeisimmäksi asetetun jäsenen numeron palauttaminen
      * @return jäsenen nro
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.getJasenNakyyNro() === 0;
+     * </pre>
      */
     public int getJasenNakyyNro() {
         return jasenNakyyNro;
@@ -62,6 +87,12 @@ public class Urheiluseurarekisteri {
      * Tarkistetaan onko väline jo lainattu
      * @param vid välineen id
      * @return true jos on lainassa valmiiksi, jos ei niin false
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.getValineID(1) === false;
+     *   urheiluseurarekisteri.getValineID(2) === false;
      */
     public boolean getValineID(int vid) {
         return lainat.getValineID(vid);
@@ -74,7 +105,23 @@ public class Urheiluseurarekisteri {
      * @param k kentän indeksi
      * @return jäsenet, jotka löytyivät
      * @throws SailoException poikkeus
-     */
+     * @example 
+     * <pre name="test">
+     *   #THROWS CloneNotSupportedException, SailoException
+     *   #PACKAGEIMPORT
+     *   #import java.util.Collection;
+     *   #import java.util.Iterator;
+     *   
+     *   alustaUrheiluseurarekisteri();
+     *   Jasen jasen3 = new Jasen(); jasen3.rekisteroi();
+     *   jasen3.aseta(1,"Jussi Jussinen");
+     *   urheiluseurarekisteri.lisaa(jasen3);
+     *   Collection<Jasen> loytyneet = urheiluseurarekisteri.etsi("*Jussi*",1);
+     *   loytyneet.size() === 1;
+     *   Iterator<Jasen> it = loytyneet.iterator();
+     *   it.next() == jasen3 === true; 
+     * </pre>
+     */ 
     public Collection<Jasen> etsi(String hakuehto, int k) throws SailoException { 
         return jasenet.etsi(hakuehto, k); 
     } 
@@ -86,6 +133,22 @@ public class Urheiluseurarekisteri {
      * @param k kentän indeksi
      * @return jäsnenet, jotka löytyivät
      * @throws SailoException poikkeus
+     * @example 
+     * <pre name="test">
+     *   #THROWS CloneNotSupportedException, SailoException
+     *   #PACKAGEIMPORT
+     *   #import java.util.Collection;
+     *   #import java.util.Iterator;
+     *   
+     *   alustaUrheiluseurarekisteri();
+     *   Valine valine3 = new Valine(); valine3.rekisteroi();
+     *   valine3.aseta(1,"Sukset #3");
+     *   urheiluseurarekisteri.lisaa(valine3);
+     *   Collection<Valine> loytyneet = urheiluseurarekisteri.etsiValine("*Sukset*",1);
+     *   loytyneet.size() === 3;
+     *   Iterator<Valine> it = loytyneet.iterator();
+     *   it.next() == valine3 === false; 
+     * </pre>
      */
     public Collection<Valine> etsiValine(String hakuehto, int k) throws SailoException { 
         return valineet.etsi(hakuehto, k); 
@@ -114,7 +177,14 @@ public class Urheiluseurarekisteri {
      * Korvaa jäsenen tietorakenteessa.  Ottaa jäsenen omistukseensa.
      * @param jasen lisätäävän jäsenen viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException poikkeus
-     * 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException  
+     *  alustaUrheiluseurarekisteri();
+     *  urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *  urheiluseurarekisteri.korvaaTaiLisaa(jasen1);
+     *  urheiluseurarekisteri.etsi("*",0).size() === 2;
+     * </pre>
      */ 
     public void korvaaTaiLisaa(Jasen jasen) throws SailoException { 
         jasenet.korvaaTaiLisaa(jasen); 
@@ -143,7 +213,14 @@ public class Urheiluseurarekisteri {
      * Korvaa välineen tietorakenteessa.  Ottaa välineen omistukseensa.
      * @param valine lisätäävän välineen viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException poikkeus
-     * 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException  
+     *  alustaUrheiluseurarekisteri();
+     *  urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *  urheiluseurarekisteri.korvaaTaiLisaa(valine1);
+     *  urheiluseurarekisteri.etsi("*",0).size() === 2;
+     * </pre>
      */ 
     public void korvaaTaiLisaa(Valine valine) throws SailoException { 
         valineet.korvaaTaiLisaa(valine); 
@@ -180,16 +257,6 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Jäsenen palauttaminen
-     * @param id jasenID
-     * @return palautetaan jäsen tai null
-     */
-    public Jasen getJasen(int id) {
-        return jasenet.getJasen(id);
-    }
-    
-    
-    /**
      * Välineen viitteen palauttaminen
      * @param i mikä väline halutaan
      * @return viite välineeseen
@@ -204,6 +271,10 @@ public class Urheiluseurarekisteri {
      * Välineen palauttaminen      
      * @param vid välineID
      * @return palautetaana väline tai null
+     * @example
+     * <pre name="test">
+     * alustaUrheiluseurarekisteri();
+     * urheiluseurarekisteri.getValine(1) === null;
      */
     public Valine getValine(int vid) {
         return valineet.getValine(vid);
@@ -222,30 +293,39 @@ public class Urheiluseurarekisteri {
     
     
     /**
-     * Luetaan seurarekisterin tiedot.
+     * Luetaan seurarekisterin tiedot
      * @throws SailoException epäonnistuessa
+     * 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.File;
+     * #import java.util.Iterator;
+     * 
+     *  Urheiluseurarekisteri rekisteri = new Urheiluseurarekisteri();
+     *  Jasen jasen1 = new Jasen(), jasen2 = new Jasen();
+     *  jasen1.jasenenTaytto();
+     *  jasen2.jasenenTaytto();
+     *  Valine valine1 = new Valine(), valine2 = new Valine();
+     *  valine1.taytaValine();
+     *  valine2.taytaValine();
+     *  rekisteri.lueTiedostosta();
+     *  rekisteri.tallenna();
+     *
+     *  
+     *  Urheiluseurarekisteri rekisteri2 = new Urheiluseurarekisteri();
+     *  Jasen jasen12 = new Jasen(), jasen22 = new Jasen();
+     *  jasen12.jasenenTaytto();
+     *  jasen22.jasenenTaytto();
+     *  rekisteri2.lueTiedostosta();
+     *  rekisteri2.tallenna();
+     * </pre>
      */
-    public void lueJasenetTiedostosta() throws SailoException {
+    public void lueTiedostosta() throws SailoException {
         jasenet = new Jasenet();
         jasenet.lueTiedostosta();
-    }
-    
-    
-    /**
-     * Luetaan seurarekisterin tiedot.
-     * @throws SailoException epäonnistuessa
-     */
-    public void lueValineetTiedostosta() throws SailoException {
         valineet = new Valineet();
         valineet.lueTiedostosta();
-    }
-    
-    
-    /**
-     * Luetaan seurarekisterin tiedot.
-     * @throws SailoException epäonnistuessa
-     */
-    public void lueLainatTiedostosta() throws SailoException {
         lainat = new Lainat();
         lainat.lueTiedostosta();
     }
@@ -281,7 +361,13 @@ public class Urheiluseurarekisteri {
     /**
      * Jäsenen poistaminen
      * @param jasen joka poistetaan'
-     * 
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *   urheiluseurarekisteri.poista(jasen1);
+     * </pre>
      */
     public void poista(Jasen jasen) {
         if (jasen == null) return;
@@ -292,6 +378,13 @@ public class Urheiluseurarekisteri {
     /**
      * Välineen poistaminen
      * @param valine joka poistetaan
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *   urheiluseurarekisteri.poista(valine1);
+     * </pre>
      */
     public void poista(Valine valine) {
         if (valine == null) return;
@@ -302,6 +395,13 @@ public class Urheiluseurarekisteri {
     /**
      * Lainan poistaminen
      * @param laina joka poistetaan
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *   urheiluseurarekisteri.poista(laina1);
+     * </pre>
      */
     public void poista(Laina laina) {
         if (laina == null) return;
@@ -312,6 +412,13 @@ public class Urheiluseurarekisteri {
     /**
      * Lainan poisto samalla, kun väline poistetaan
      * @param vid välineID
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *   urheiluseurarekisteri.poistaLaina(1);
+     * </pre>
      */
     public void poistaLaina(int vid) {
         lainat.poistaLaina(vid);
@@ -322,6 +429,13 @@ public class Urheiluseurarekisteri {
      * Jäsenen kaikkien lainojen poistaminen
      * @param jid jasenID
      * @return onko vai ei
+     * @example
+     * <pre name="test">
+     * #THROWS Exception
+     *   alustaUrheiluseurarekisteri();
+     *   urheiluseurarekisteri.etsi("*",0).size() === 2;
+     *   urheiluseurarekisteri.palautaEkaLainat(1);
+     * </pre>
      */
     public int palautaEkaLainat(int jid) {
         if (lainat.palautaEnsinLainat(jid) == 1) return 1;
@@ -336,34 +450,6 @@ public class Urheiluseurarekisteri {
     public void tallenna() throws SailoException {
         jasenet.tallenna();
         valineet.tallenna();
-        lainat.tallenna();
-        Dialogs.showMessageDialog("Tallennus onnistui!");
-    }
-    
-    
-    /**
-     * Jäsenten tallennus tiedostoon
-     * @throws SailoException jos epäonnistuu
-     */
-    public void tallennaJasenet() throws SailoException {
-        jasenet.tallenna();
-    }
-    
-    
-    /**
-     * Välineiden tallennus tiedostoon
-     * @throws SailoException jos epäonnistuu
-     */
-    public void tallennaValineet() throws SailoException {
-        valineet.tallenna();
-    }
-    
-    
-    /**
-     * Lainojen tallennus tiedostoon
-     * @throws SailoException jos epäonnistuu
-     */
-    public void tallennaLainat() throws SailoException {
         lainat.tallenna();
     }
     
@@ -424,19 +510,6 @@ public class Urheiluseurarekisteri {
             System.out.println("Väline: " + i);
             laina.tulosta(System.out);
         }
-    }
-
-
-    /**
-     * Tallentaa hiljaisesti
-     * Seurarekisterin tietojen tallentaminen tiedostoon
-     * @throws SailoException tallennuksen epäonnistuessa
-     */
-    public void hiljainenTallenna() throws SailoException {
-        jasenet.tallenna();
-        valineet.tallenna();
-        lainat.tallenna();
-        
     }
 
 }

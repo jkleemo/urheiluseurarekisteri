@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import fi.jyu.mit.ohj2.WildChars;
+
 /**
  * Urheiluseuran välineiden lisääminen
  * @author jailklee
@@ -37,6 +39,11 @@ public class Valineet implements Iterable<Valine> {
      * Välineen palauttaminen
      * @param vid välineID
      * @return palautetaan väline tai null
+     * <pre name="test">
+     * Valineet valineet = new Valineet();
+     * Valine valine1 = new Valine(), valine2 = new Valine();
+     * valine1.rekisteroi(); valine2.rekisteroi();
+     * valineet.getValine(1) === null;
      */
     public Valine getValine(int vid) {
         for (int i=0; i<alkiot.size(); i++) {
@@ -59,6 +66,26 @@ public class Valineet implements Iterable<Valine> {
      * Korvaa välineen tietorakenteessa.  Ottaa välineen omistukseensa.
      * @param valine lisätäävän välineen viite.  Huom tietorakenne muuttuu omistajaksi
      * @throws SailoException tietorakenteen ollessa täynnä
+     * <pre name="test">
+     * #THROWS SailoException,CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Valineet valineet = new Valineet();
+     * Valine valine1 = new Valine(), valine2 = new Valine();
+     * valine1.rekisteroi(); valine2.rekisteroi();
+     * valineet.getLkm() === 0;
+     * valineet.korvaaTaiLisaa(valine1); valineet.getLkm() === 1;
+     * valineet.korvaaTaiLisaa(valine2); valineet.getLkm() === 2;
+     * Valine valine3 = valine1.clone();
+     * valine3.aseta(3,"kkk");
+     * Iterator<Valine> it = valineet.iterator();
+     * it.next() == valine1 === true;
+     * valineet.korvaaTaiLisaa(valine3); valineet.getLkm() === 2;
+     * it = valineet.iterator();
+     * Valine v0 = it.next();
+     * v0 === valine3;
+     * v0 == valine3 === true;
+     * v0 == valine1 === false;
+     * </pre>
      */
     public void korvaaTaiLisaa(Valine valine) throws SailoException {
         int id = valine.getValineID();
@@ -142,6 +169,16 @@ public class Valineet implements Iterable<Valine> {
      * Välineen poistaminen
      * @param id välineID
      * @return 1 jos poistettiin, 0 jos ei löydy 
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Valineet valineet = new Valineet(); 
+     * Valine valine1 = new Valine(), valine2 = new Valine(), valine3 = new Valine(); 
+     * valine1.rekisteroi(); valine2.rekisteroi(); valine3.rekisteroi(); 
+     * int id1 = valine1.getValineID(); 
+     * valineet.lisaa(valine1); valineet.lisaa(valine2); valineet.lisaa(valine3); 
+     * valineet.poista(id1+1) === 1; 
+     * </pre> 
      */
     public int poista(int id) { 
         int ind = etsiId(id); 
@@ -156,7 +193,17 @@ public class Valineet implements Iterable<Valine> {
      * Välineen id:n etsiminen
      * @param id id, joka etsitään
      * @return id löytyneen välineen indeksi tai -1 jos ei löydy
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Valineet valineet = new Valineet(); 
+     * Valine valine1 = new Valine(), valine2 = new Valine(), valine3 = new Valine(); 
+     * valine1.rekisteroi(); valine2.rekisteroi(); valine3.rekisteroi(); 
+     * int id1 = valine1.getValineID(); 
+     * valineet.lisaa(valine1); valineet.lisaa(valine2); valineet.lisaa(valine3); 
+     * valineet.etsiId(id1+1) === 1; 
+     * valineet.etsiId(id1+2) === 2; 
+     * </pre> 
+     */ 
     public int etsiId(int id) { 
         for (int i = 0; i<alkiot.size(); i++) 
             if (id == alkiot.get(i).getValineID()) return i; 
@@ -171,19 +218,27 @@ public class Valineet implements Iterable<Valine> {
      * <pre name="test">
      * #THROWS SailoException 
      * #import java.io.File;
-     * 
+     * #import java.util.Iterator;
      *  Valineet valineet = new Valineet();
-     *  Valine pallo1 = new Valine(), pallo2 = new Valine();
-     *  pallo1.taytaValine();
-     *  pallo2.taytaValine();
+     *  Valine valine1 = new Valine(), valine2 = new Valine();
+     *  valine1.taytaValine();
+     *  valine2.taytaValine();
      *  valineet.lueTiedostosta();
-     *  valineet.lisaa(pallo1);
-     *  valineet.lisaa(pallo2);
      *  valineet.tallenna();
-     *  valineet = new Valineet();           
-     *  valineet.lueTiedostosta();  
-     *  valineet.lisaa(pallo2);
+     *  valineet = new Valineet();    
+     *  valineet.lueTiedostosta(); 
      *  valineet.tallenna();
+     *  String hakemisto = "testi";
+     *  String tiedNimi = hakemisto+"/nimet";
+     *  File ftied = new File(tiedNimi+".dat");
+     *  File dir = new File(hakemisto);
+     *  dir.mkdir();
+     *  ftied.delete();
+     *  ftied.delete() === false;
+     *  File fbak = new File(tiedNimi+".bak");
+     *  fbak.delete();
+     *  fbak.delete() === false;
+     *  dir.delete() === true;
      * </pre>
      */
     public void lueTiedostosta() throws SailoException {
@@ -312,6 +367,8 @@ public class Valineet implements Iterable<Valine> {
     public Iterator<Valine> iterator() {
         return new ValineetIterator();
     }
+    
+    
     /**
      * Palauttaa "taulukossa" hakuehtoon vastaavien välineiden viitteet
      * @param hakuehto hakuehto
@@ -321,17 +378,25 @@ public class Valineet implements Iterable<Valine> {
      * <pre name="test"> 
      * #THROWS SailoException  
      *   Valineet valineet = new Valineet(); 
-     *   Valine pallo1 = new Valine(); pallo1.parse("1|Sukset|Fischer|"); 
-     *   Valine pallo2 = new Valine(); pallo2.parse("2|Jalkapallo||Select|"); 
-     *   Valine pallo3 = new Valine(); pallo3.parse("3|Sauvat|One way||2018|");  
-     *   valineet.lisaa(pallo1); valineet.lisaa(pallo2); valineet.lisaa(pallo3);
+     *   Valine valine1 = new Valine(); valine1.parse("1|Sukset #1|Fischer|2021|Ei lainassa"); 
+     *   Valine valine2 = new Valine(); valine2.parse("2|Sukset #1|Fischer|2021|Ei lainassa"); 
+     *   Valine valine3 = new Valine(); valine3.parse("3|Sukset #1|Fischer|2021|Ei lainassa"); 
+     *   Valine valine4 = new Valine(); valine4.parse("4|Sukset #1|Fischer|2021|Ei lainassa"); 
+     *   Valine valine5 = new Valine(); valine5.parse("5|Sukset #1|Fischer|2021|Ei lainassa"); 
+     *   valineet.lisaa(valine1); valineet.lisaa(valine2); valineet.lisaa(valine3); valineet.lisaa(valine4); valineet.lisaa(valine5);
+     *   List<Valine> loytyneet;  
+     *   loytyneet = (List<Valine>)valineet.etsi(null,-1);  
+     *   loytyneet.size() === 5;  
      * </pre> 
      */ 
-    @SuppressWarnings("unused")
     public Collection<Valine> etsi(String hakuehto, int k) { 
+        String ehto = "*"; 
+        if ( hakuehto != null && hakuehto.length() > 0 ) ehto = hakuehto; 
+        int hk = k; 
+        if ( hk < 0 ) hk = 1;
         Collection<Valine> loytyneet = new ArrayList<Valine>(); 
         for (Valine valine : this) { 
-            loytyneet.add(valine); 
+            if (WildChars.onkoSamat(valine.anna(hk), ehto)) loytyneet.add(valine);   
         } 
         return loytyneet; 
     }

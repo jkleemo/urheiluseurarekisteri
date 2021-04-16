@@ -45,8 +45,7 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
         urheiluseurarekisteri.poista(laina);
         valine.setLainassa("Ei lainassa");
         try {
-            urheiluseurarekisteri.tallennaLainat();
-            urheiluseurarekisteri.tallennaValineet();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException e) {
             e.printStackTrace();
         }
@@ -94,7 +93,7 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
      */
     private String tallenna() {
         try {
-            urheiluseurarekisteri.tallennaLainat();
+            urheiluseurarekisteri.tallenna();
             return null;
         } catch (SailoException ex) {
             Dialogs.showMessageDialog("Tallennus epäonnistui! " + ex.getMessage());
@@ -118,9 +117,9 @@ public class SeuraLainatController implements ModalControllerInterface<Urheiluse
      */
     protected String lueTiedostosta() {
         try {
-            urheiluseurarekisteri.lueLainatTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             hae();
-            urheiluseurarekisteri.lueValineetTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             return null;
         } catch (SailoException e) {
             hae();

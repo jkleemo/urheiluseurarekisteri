@@ -269,6 +269,12 @@ public class Jasen implements Cloneable{
     /**
      * Nimen palautus
      * @return jäsenen nimi
+     * @example
+     * <pre name="test">
+     *   Jasen jasen1 = new Jasen();
+     *   jasen1.jasenenTaytto();
+     *   jasen1.getNimi() =R= "Jouko Joukkio";
+     * </pre>
      */
     public String getNimi() {
         return nimi;
@@ -278,6 +284,12 @@ public class Jasen implements Cloneable{
     /**
      * Palautetaan postinro
      * @return postinro
+     * @example
+     * <pre name="test">
+     *   Jasen jasen1 = new Jasen();
+     *   jasen1.jasenenTaytto();
+     *   jasen1.getPostinro() =R= "14144";
+     * </pre>
      */
     public String getPostinro() {
         return postinro;

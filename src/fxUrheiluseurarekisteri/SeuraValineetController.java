@@ -138,7 +138,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
         valine.rekisteroi(); 
         urheiluseurarekisteri.lisaa(valine);
         try {
-            urheiluseurarekisteri.tallennaValineet();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException e) {
             e.printStackTrace();
         }
@@ -191,8 +191,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
         urheiluseurarekisteri.poistaLaina(vid);
         urheiluseurarekisteri.poista(valine);
         try {
-            urheiluseurarekisteri.tallennaValineet();
-            urheiluseurarekisteri.tallennaLainat();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException e) {
             e.printStackTrace();
         }
@@ -207,7 +206,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
      */
     private String valineenTallennus() {
         try {
-            urheiluseurarekisteri.hiljainenTallenna();
+            urheiluseurarekisteri.tallenna();
             return null;
         } catch (SailoException ex) {
             Dialogs.showMessageDialog("Error! " + ex.getMessage());
@@ -245,7 +244,7 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
         laina.rekisteroi();
         urheiluseurarekisteri.lisaa(laina);
         try {
-            urheiluseurarekisteri.tallennaLainat();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException ex) {
             Dialogs.showMessageDialog("Error! " + ex.getMessage());
             return ex.getMessage();
@@ -262,9 +261,9 @@ public class SeuraValineetController implements ModalControllerInterface<Urheilu
      */
     protected String lueTiedostosta() {
         try {
-            urheiluseurarekisteri.lueValineetTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             hae(0);
-            urheiluseurarekisteri.lueLainatTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             return null;
         } catch (SailoException e) {
             hae(0);

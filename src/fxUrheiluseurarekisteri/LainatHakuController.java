@@ -39,8 +39,7 @@ public class LainatHakuController implements ModalControllerInterface<Urheiluseu
      */
     protected String lueTiedostosta() {
         try {
-            urheiluseurarekisteri.lueLainatTiedostosta();
-            urheiluseurarekisteri.lueValineetTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             return null;
         } catch (SailoException e) {
             String virhe = e.getMessage(); 

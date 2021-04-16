@@ -43,24 +43,21 @@ public class Jasenet implements Iterable<Jasen> {
     }
     
     
-    /**
-     * Jäsenen palauttaminen
-     * @param id jasenID
-     * @return palautetaan jäsen tai null
-     */
-    public Jasen getJasen(int id) {
-        for (int i=0; i<alkiot.length; i++) {
-            if (alkiot[i].getJasenID() == id) return alkiot[i];
-        }
-        return null;
-    }
-    
-    
     /** 
      * Jäsenen poisto
      * @param id poistettavan jäsenen jäsenID 
      * @return 1 jos poistettiin, 0 jos ei löydy
-     */
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Jasenet jasenet = new Jasenet(); 
+     * Jasen jasen1 = new Jasen(), jasen2 = new Jasen(), jasen3 = new Jasen(); 
+     * jasen1.rekisteroi(); jasen2.rekisteroi(); jasen3.rekisteroi(); 
+     * int id1 = jasen1.getJasenID(); 
+     * jasenet.lisaa(jasen1); jasenet.lisaa(jasen2); jasenet.lisaa(jasen3); 
+     * jasenet.poista(id1+1) === 1; 
+     * </pre> 
+     */ 
     public int poista(int id) { 
         int ind = etsiId(id); 
         if (ind < 0) return 0; 
@@ -77,7 +74,17 @@ public class Jasenet implements Iterable<Jasen> {
      * Jäsenen id:n etsiminen
      * @param id mitä etsitään
      * @return id jäsenen id
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Jasenet jasenet = new Jasenet(); 
+     * Jasen jasen1 = new Jasen(), jasen2 = new Jasen(), jasen3 = new Jasen(); 
+     * jasen1.rekisteroi(); jasen2.rekisteroi(); jasen3.rekisteroi(); 
+     * int id1 = jasen1.getJasenID(); 
+     * jasenet.lisaa(jasen1); jasenet.lisaa(jasen2); jasenet.lisaa(jasen3); 
+     * jasenet.etsiId(id1+1) === 1; 
+     * jasenet.etsiId(id1+2) === 2; 
+     * </pre> 
+     */ 
     public int etsiId(int id) { 
         for (int i = 0; i<lkm; i++) 
             if (id == alkiot[i].getJasenID()) return i; 
@@ -89,6 +96,26 @@ public class Jasenet implements Iterable<Jasen> {
      * Korvaa jäsenen tietorakenteessa
      * @param jasen lisättävän jäsenen viite
      * @throws SailoException tietorakenteen ollessa täynnä
+     * <pre name="test">
+     * #THROWS SailoException,CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Jasenet jasenet = new Jasenet();
+     * Jasen jasen1 = new Jasen(), jasen2 = new Jasen();
+     * jasen1.rekisteroi(); jasen2.rekisteroi();
+     * jasenet.getLkm() === 0;
+     * jasenet.korvaaTaiLisaa(jasen1); jasenet.getLkm() === 1;
+     * jasenet.korvaaTaiLisaa(jasen2); jasenet.getLkm() === 2;
+     * Jasen jasen3 = jasen1.clone();
+     * jasen3.aseta(3,"kkk");
+     * Iterator<Jasen> it = jasenet.iterator();
+     * it.next() == jasen1 === true;
+     * jasenet.korvaaTaiLisaa(jasen3); jasenet.getLkm() === 2;
+     * it = jasenet.iterator();
+     * Jasen j0 = it.next();
+     * j0 === jasen3;
+     * j0 == jasen3 === true;
+     * j0 == jasen1 === false;
+     * </pre>
      */
     public void korvaaTaiLisaa(Jasen jasen) throws SailoException {
         int id = jasen.getJasenID();
@@ -110,19 +137,27 @@ public class Jasenet implements Iterable<Jasen> {
      * <pre name="test">
      * #THROWS SailoException 
      * #import java.io.File;
-     * 
+     * #import java.util.Iterator;
      *  Jasenet jasenet = new Jasenet();
-     *  Jasen jouko1 = new Jasen(), jouko2 = new Jasen();
-     *  jouko1.jasenenTaytto();
-     *  jouko2.jasenenTaytto();
+     *  Jasen jasen1 = new Jasen(), jasen2 = new Jasen();
+     *  jasen1.jasenenTaytto();
+     *  jasen2.jasenenTaytto();
      *  jasenet.lueTiedostosta();
-     *  jasenet.lisaa(jouko1);
-     *  jasenet.lisaa(jouko2);
      *  jasenet.tallenna();
-     *  jasenet = new Jasenet();           
-     *  jasenet.lueTiedostosta();  
-     *  jasenet.lisaa(jouko2);
+     *  jasenet = new Jasenet();    
+     *  jasenet.lueTiedostosta(); 
      *  jasenet.tallenna();
+     *  String hakemisto = "testi";
+     *  String tiedNimi = hakemisto+"/nimet";
+     *  File ftied = new File(tiedNimi+".dat");
+     *  File dir = new File(hakemisto);
+     *  dir.mkdir();
+     *  ftied.delete();
+     *  ftied.delete() === false;
+     *  File fbak = new File(tiedNimi+".bak");
+     *  fbak.delete();
+     *  fbak.delete() === false;
+     *  dir.delete() === true;
      * </pre>
      */
     public void lueTiedostosta() throws SailoException {
@@ -307,10 +342,15 @@ public class Jasenet implements Iterable<Jasen> {
      * <pre name="test"> 
      * #THROWS SailoException  
      *   Jasenet jasenet = new Jasenet(); 
-     *   Jasen jouko1 = new Jasen(); jouko1.parse("1|Anu Anttila|11111-111|Kotikatu 1|"); 
-     *   Jasen jouko2 = new Jasen(); jouko2.parse("2|Jouko Joukkio||22222-2222|"); 
-     *   Jasen jouko3 = new Jasen(); jouko3.parse("3|Hemmu Heppola|333333-33333||2222222|Jyväsmetsä");  
-     *   jasenet.lisaa(jouko1); jasenet.lisaa(jouko2); jasenet.lisaa(jouko3);
+     *   Jasen jasen1 = new Jasen(); jasen1.parse("1|Jouko Joukkio|212198-1234|Kärkikuja 1|40740|Jyväskunta|0449221122|jouko@gmail.com|kalju"); 
+     *   Jasen jasen2 = new Jasen(); jasen2.parse("2|Pirkka Pirkkonen|232323-12323|Kärkikuja 3|40740|Jyväsmetro|033232323|pirkka@pirkkonen.com|ei kalju"); 
+     *   Jasen jasen3 = new Jasen(); jasen3.parse("3|Jouko Joukkio|212198-1234|Kärkikuja 1|40740|Jyväskunta|0449221122|jouko@gmail.com|kalju"); 
+     *   Jasen jasen4 = new Jasen(); jasen4.parse("4|Pirkka Pirkkonen|232323-12323|Kärkikuja 3|40740|Jyväsmetro|033232323|pirkka@pirkkonen.com|ei kalju"); 
+     *   Jasen jasen5 = new Jasen(); jasen5.parse("5|Pirkka Pirkkonen|232323-12323|Kärkikuja 3|40740|Jyväsmetro|033232323|pirkka@pirkkonen.com|ei kalju"); 
+     *   jasenet.lisaa(jasen1); jasenet.lisaa(jasen2); jasenet.lisaa(jasen3); jasenet.lisaa(jasen4); jasenet.lisaa(jasen5);
+     *   List<Jasen> loytyneet;  
+     *   loytyneet = (List<Jasen>)jasenet.etsi(null,-1);  
+     *   loytyneet.size() === 5;  
      * </pre> 
      */ 
     public Collection<Jasen> etsi(String hakuehto, int k) { 

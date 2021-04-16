@@ -139,7 +139,7 @@ public class UrheiluseurarekisteriGUIController {
      */
     protected String lueTiedosto() {
         try {
-            urheiluseurarekisteri.lueJasenetTiedostosta();
+            urheiluseurarekisteri.lueTiedostosta();
             hae(0);
             return null;
         } catch (SailoException e) {
@@ -172,7 +172,7 @@ public class UrheiluseurarekisteriGUIController {
         jasen.rekisteroi(); 
         urheiluseurarekisteri.lisaa(jasen);
         try {
-            urheiluseurarekisteri.tallennaJasenet();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException e) {
             e.printStackTrace();
         }
@@ -233,8 +233,7 @@ public class UrheiluseurarekisteriGUIController {
         }
         urheiluseurarekisteri.poista(jasen);
         try {
-            urheiluseurarekisteri.tallennaJasenet();
-            urheiluseurarekisteri.tallennaLainat();
+            urheiluseurarekisteri.tallenna();
         } catch (SailoException e) {
             e.printStackTrace();
         }
@@ -282,6 +281,7 @@ public class UrheiluseurarekisteriGUIController {
     private String jasenenTallennus() {
         try {
             urheiluseurarekisteri.tallenna();
+            Dialogs.showMessageDialog("Tallennus onnistui!");
             return null;
         } catch (SailoException ex) {
             Dialogs.showMessageDialog("Error! " + ex.getMessage());

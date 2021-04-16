@@ -32,6 +32,11 @@ public class Laina {
     /**
      * Palautetaan jasenID.
      * @return lainan toteuttavan jäsenen id
+     * @example
+     * <pre name="test">
+     *   Laina laina1 = new Laina(1,2);
+     *   laina1.getJasenID() === 1;
+     * </pre>
      */
     public int getJasenID() {
         return jasenID;
@@ -125,6 +130,11 @@ public class Laina {
     /**
      * VälineID:n hakeminen
      * @return kyseisen välineen ID
+     * @example
+     * <pre name="test">
+     *   Laina laina1 = new Laina(1,2);
+     *   laina1.getValineID() === 2;
+     * </pre>
      */
     public int getValineID() {
         return valineID;

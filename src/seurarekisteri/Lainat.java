@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,17 +48,24 @@ public class Lainat implements Iterable<Laina> {
      * <pre name="test">
      * #THROWS SailoException 
      * #import java.io.File;
-     * 
+     * #import java.util.Iterator;
      *  Lainat lainat = new Lainat();
-     *  Laina laina1 = new Laina(1,1), laina2 = new Laina(2,2);
      *  lainat.lueTiedostosta();
-     *  lainat.lisaa(laina1);
-     *  lainat.lisaa(laina2);
      *  lainat.tallenna();
-     *  lainat = new Lainat();           
-     *  lainat.lueTiedostosta();  
-     *  lainat.lisaa(laina2);
+     *  lainat = new Lainat();    
+     *  lainat.lueTiedostosta(); 
      *  lainat.tallenna();
+     *  String hakemisto = "testi";
+     *  String tiedNimi = hakemisto+"/nimet";
+     *  File ftied = new File(tiedNimi+".dat");
+     *  File dir = new File(hakemisto);
+     *  dir.mkdir();
+     *  ftied.delete();
+     *  ftied.delete() === false;
+     *  File fbak = new File(tiedNimi+".bak");
+     *  fbak.delete();
+     *  fbak.delete() === false;
+     *  dir.delete() === true;
      * </pre>
      */
     public void lueTiedostosta() throws SailoException {
@@ -84,7 +90,16 @@ public class Lainat implements Iterable<Laina> {
     /**
      * Lainan poisto välineen id:llä.
      * @param vid välineID
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Lainat lainat = new Lainat(); 
+     * Laina laina1 = new Laina(1,2), laina2 = new Laina(2,3), laina3 = new Laina(3,1); 
+     * laina1.rekisteroi(); laina2.rekisteroi(); laina3.rekisteroi(); 
+     * int id1 = laina1.getLainaID(); 
+     * lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3); 
+     * lainat.poistaLaina(id1+1); 
+     * </pre> 
+     */ 
     public void poistaLaina(int vid) {
         for (int i=0; i<alkiot.size(); i++) {
             if (alkiot.get(i).getValineID() == vid) poista(alkiot.get(i).getLainaID());
@@ -96,7 +111,16 @@ public class Lainat implements Iterable<Laina> {
      * Palauta ensin!
      * @param jid jäsenID
      * @return onko vai ei
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Lainat lainat = new Lainat(); 
+     * Laina laina1 = new Laina(1,2), laina2 = new Laina(2,3), laina3 = new Laina(3,1); 
+     * laina1.rekisteroi(); laina2.rekisteroi(); laina3.rekisteroi(); 
+     * int id1 = laina1.getLainaID(); 
+     * lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3); 
+     * lainat.palautaEnsinLainat(id1+1) === 0; 
+     * </pre> 
+     */ 
     public int palautaEnsinLainat(int jid) {
         for (int i=0; i<alkiot.size(); i++) {
             if (alkiot.get(i).getJasenID() == jid) {
@@ -112,7 +136,16 @@ public class Lainat implements Iterable<Laina> {
      * Lainan poistaminen
      * @param id lainanID
      * @return 1 jos poistettiin, 0 jos ei löydy
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Lainat lainat = new Lainat(); 
+     * Laina laina1 = new Laina(1,2), laina2 = new Laina(2,3), laina3 = new Laina(3,1); 
+     * laina1.rekisteroi(); laina2.rekisteroi(); laina3.rekisteroi(); 
+     * int id1 = laina1.getLainaID(); 
+     * lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3); 
+     * lainat.palautaEnsin(id1+1) === 1; 
+     * </pre> 
+     */ 
     public int palautaEnsin(int id) { 
         int ind = etsiId(id); 
         if (ind < 0) return 0; 
@@ -125,7 +158,17 @@ public class Lainat implements Iterable<Laina> {
      * Lainan poistaminen
      * @param id lainanID
      * @return 1 jos poistettiin, 0 jos ei löydy
-     */
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Lainat lainat = new Lainat(); 
+     * Laina laina1 = new Laina(1,2), laina2 = new Laina(2,3), laina3 = new Laina(3,1); 
+     * laina1.rekisteroi(); laina2.rekisteroi(); laina3.rekisteroi(); 
+     * int id1 = laina1.getLainaID(); 
+     * lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3); 
+     * lainat.poista(id1+1) === 1; 
+     * </pre> 
+     */ 
     public int poista(int id) { 
         int ind = etsiId(id); 
         if (ind < 0) return 0; 
@@ -139,7 +182,17 @@ public class Lainat implements Iterable<Laina> {
      * Lainan id:n etsiminen
      * @param id id, jota etsitään
      * @return id lainan id
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Lainat lainat = new Lainat(); 
+     * Laina laina1 = new Laina(1,2), laina2 = new Laina(2,3), laina3 = new Laina(3,1); 
+     * laina1.rekisteroi(); laina2.rekisteroi(); laina3.rekisteroi(); 
+     * int id1 = laina1.getLainaID(); 
+     * lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3); 
+     * lainat.etsiId(id1+1) === 1; 
+     * lainat.etsiId(id1+2) === 2; 
+     * </pre> 
+     */ 
     public int etsiId(int id) { 
         for (int i = 0; i<alkiot.size(); i++) 
             if (id == alkiot.get(i).getLainaID()) return i; 
@@ -331,29 +384,7 @@ public class Lainat implements Iterable<Laina> {
     public Iterator<Laina> iterator() {
         return new LainatIterator();
     }
-    /**
-     * Palauttaa "taulukossa" hakuehtoon vastaavien lainojen viitteet
-     * @param hakuehto hakuehto
-     * @param k etsittävän kentän indeksi 
-     * @return tietorakenteen löytyneistä lainoista
-     * @example 
-     * <pre name="test"> 
-     * #THROWS SailoException  
-     *   Lainat lainat = new Lainat(); 
-     *   Laina laina1 = new Laina(1,1); laina1.parse("1|1|1"); 
-     *   Laina laina2 = new Laina(2,2); laina2.parse("2|2|2"); 
-     *   Laina laina3 = new Laina(3,3); laina3.parse("3|3|3");  
-     *   lainat.lisaa(laina1); lainat.lisaa(laina2); lainat.lisaa(laina3);
-     * </pre> 
-     */ 
-    @SuppressWarnings("unused")
-    public Collection<Laina> etsi(String hakuehto, int k) { 
-        Collection<Laina> loytyneet = new ArrayList<Laina>(); 
-        for (Laina laina : this) { 
-            loytyneet.add(laina); 
-        } 
-        return loytyneet; 
-    }
+
     
 
     /**
