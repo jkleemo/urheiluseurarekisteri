@@ -215,16 +215,19 @@ public class Jasenet implements Iterable<Jasen> {
      * 1|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000090|jj@jj.fi|
      * 2|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000010|jj@jj.fi|
      * </pre>
-     * <pre name="test"> 
+     * <pre name="test">
      * #THROWS SailoException 
      * #import java.io.File;
      * #import java.util.Iterator;
-     *  Lainat lainat = new Lainat();
-     *  lainat.lueTiedostosta();
-     *  lainat.tallenna();
-     *  lainat = new Lainat();    
-     *  lainat.lueTiedostosta(); 
-     *  lainat.tallenna();
+     *  Jasenet jasenet = new Jasenet();
+     *  Jasen jasen1 = new Jasen(), jasen2 = new Jasen();
+     *  jasen1.jasenenTaytto();
+     *  jasen2.jasenenTaytto();
+     *  jasenet.lueTiedostosta();
+     *  jasenet.tallenna();
+     *  jasenet = new Jasenet();    
+     *  jasenet.lueTiedostosta(); 
+     *  jasenet.tallenna();
      *  String hakemisto = "testi";
      *  String tiedNimi = hakemisto+"/nimet";
      *  File ftied = new File(tiedNimi+".dat");
@@ -236,8 +239,8 @@ public class Jasenet implements Iterable<Jasen> {
      *  fbak.delete();
      *  fbak.delete() === false;
      *  dir.delete() === true;
-     * </pre> 
-     */ 
+     * </pre>
+     */
     public void tallenna() throws SailoException {
         if ( !muutettu ) return;
         File fbak = new File(getBakNimi());

@@ -112,29 +112,27 @@ public class Valineet implements Iterable<Valine> {
      * 4|Sukset|Fischer|2018|1.1.2022|
      * </pre>
      * @throws SailoException jos talletus epäonnistuu
-     * <pre name="test"> 
-     * #THROWS SailoException 
-     * #import java.io.File;
-     * #import java.util.Iterator;
-     *  Lainat lainat = new Lainat();
-     *  lainat.lueTiedostosta();
-     *  lainat.tallenna();
-     *  lainat = new Lainat();    
-     *  lainat.lueTiedostosta(); 
-     *  lainat.tallenna();
-     *  String hakemisto = "testi";
-     *  String tiedNimi = hakemisto+"/nimet";
-     *  File ftied = new File(tiedNimi+".dat");
-     *  File dir = new File(hakemisto);
-     *  dir.mkdir();
-     *  ftied.delete();
-     *  ftied.delete() === false;
-     *  File fbak = new File(tiedNimi+".bak");
-     *  fbak.delete();
-     *  fbak.delete() === false;
-     *  dir.delete() === true;
-     * </pre> 
-     */ 
+          * <pre name="test">
+     * #THROWS SailoException,CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Valineet valineet = new Valineet();
+     * Valine valine1 = new Valine(), valine2 = new Valine();
+     * valine1.rekisteroi(); valine2.rekisteroi();
+     * valineet.getLkm() === 0;
+     * valineet.korvaaTaiLisaa(valine1); valineet.getLkm() === 1;
+     * valineet.korvaaTaiLisaa(valine2); valineet.getLkm() === 2;
+     * Valine valine3 = valine1.clone();
+     * valine3.aseta(3,"kkk");
+     * Iterator<Valine> it = valineet.iterator();
+     * it.next() == valine1 === true;
+     * valineet.korvaaTaiLisaa(valine3); valineet.getLkm() === 2;
+     * it = valineet.iterator();
+     * Valine v0 = it.next();
+     * v0 === valine3;
+     * v0 == valine3 === true;
+     * v0 == valine1 === false;
+     * </pre>
+     */
     public void tallenna() throws SailoException {
         if ( !muutettu ) return;
         File fbak = new File(getBakNimi());
