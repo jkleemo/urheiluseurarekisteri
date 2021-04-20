@@ -218,15 +218,18 @@ public class Jasenet implements Iterable<Jasen> {
      * <pre name="test">
      * #THROWS SailoException 
      * #import java.io.File;
-     * #import java.util.Iterator;
+     * 
      *  Jasenet jasenet = new Jasenet();
-     *  Jasen jasen1 = new Jasen(), jasen2 = new Jasen();
-     *  jasen1.jasenenTaytto();
-     *  jasen2.jasenenTaytto();
+     *  Jasen jouko1 = new Jasen(), jouko2 = new Jasen();
+     *  jouko1.jasenenTaytto();
+     *  jouko2.jasenenTaytto();
      *  jasenet.lueTiedostosta();
+     *  jasenet.lisaa(jouko1);
+     *  jasenet.lisaa(jouko2);
      *  jasenet.tallenna();
-     *  jasenet = new Jasenet();    
-     *  jasenet.lueTiedostosta(); 
+     *  jasenet = new Jasenet();           
+     *  jasenet.lueTiedostosta();  
+     *  jasenet.lisaa(jouko2);
      *  jasenet.tallenna();
      *  String hakemisto = "testi";
      *  String tiedNimi = hakemisto+"/nimet";
