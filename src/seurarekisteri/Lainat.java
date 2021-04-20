@@ -238,7 +238,29 @@ public class Lainat implements Iterable<Laina> {
      * 3|1|10
      * </pre>
      * @throws SailoException jos talletus epäonnistuu
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException 
+     * #import java.io.File;
+     * #import java.util.Iterator;
+     *  Lainat lainat = new Lainat();
+     *  lainat.lueTiedostosta();
+     *  lainat.tallenna();
+     *  lainat = new Lainat();    
+     *  lainat.lueTiedostosta(); 
+     *  lainat.tallenna();
+     *  String hakemisto = "testi";
+     *  String tiedNimi = hakemisto+"/nimet";
+     *  File ftied = new File(tiedNimi+".dat");
+     *  File dir = new File(hakemisto);
+     *  dir.mkdir();
+     *  ftied.delete();
+     *  ftied.delete() === false;
+     *  File fbak = new File(tiedNimi+".bak");
+     *  fbak.delete();
+     *  fbak.delete() === false;
+     *  dir.delete() === true;
+     * </pre> 
+     */ 
     public void tallenna() throws SailoException {
         if ( !muutettu ) return;
         File fbak = new File(getBakNimi());

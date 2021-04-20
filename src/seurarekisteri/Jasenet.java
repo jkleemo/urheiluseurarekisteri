@@ -215,8 +215,29 @@ public class Jasenet implements Iterable<Jasen> {
      * 1|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000090|jj@jj.fi|
      * 2|Jouko Joukkio|121212-2323|Kylpylätie 1|14144|Jyväskunta|10000010|jj@jj.fi|
      * </pre>
-     * @throws SailoException jos talletus epäonnistuu
-     */
+     * <pre name="test"> 
+     * #THROWS SailoException 
+     * #import java.io.File;
+     * #import java.util.Iterator;
+     *  Lainat lainat = new Lainat();
+     *  lainat.lueTiedostosta();
+     *  lainat.tallenna();
+     *  lainat = new Lainat();    
+     *  lainat.lueTiedostosta(); 
+     *  lainat.tallenna();
+     *  String hakemisto = "testi";
+     *  String tiedNimi = hakemisto+"/nimet";
+     *  File ftied = new File(tiedNimi+".dat");
+     *  File dir = new File(hakemisto);
+     *  dir.mkdir();
+     *  ftied.delete();
+     *  ftied.delete() === false;
+     *  File fbak = new File(tiedNimi+".bak");
+     *  fbak.delete();
+     *  fbak.delete() === false;
+     *  dir.delete() === true;
+     * </pre> 
+     */ 
     public void tallenna() throws SailoException {
         if ( !muutettu ) return;
         File fbak = new File(getBakNimi());
@@ -375,9 +396,27 @@ public class Jasenet implements Iterable<Jasen> {
      * Jasenet jasenet = new Jasenet();
      * Jasen eka = new Jasen();
      * Jasen toka = new Jasen();
+     * Jasen kolmas = new Jasen();
+     * Jasen neljas = new Jasen();
+     * Jasen viides = new Jasen();
+     * Jasen kuudes = new Jasen();
+     * Jasen seiska = new Jasen();
+     * Jasen kasi = new Jasen();
+     * Jasen ysi = new Jasen();
+     * Jasen kymppi = new Jasen();
+     * Jasen ykstoista = new Jasen();
      * jasenet.getLkm() === 0;
      * jasenet.lisaa(eka); jasenet.getLkm() === 1;
      * jasenet.lisaa(toka); jasenet.getLkm() === 2;
+     * jasenet.lisaa(kolmas); jasenet.getLkm() === 3;
+     * jasenet.lisaa(neljas); jasenet.getLkm() === 4;
+     * jasenet.lisaa(viides); jasenet.getLkm() === 5;
+     * jasenet.lisaa(kuudes); jasenet.getLkm() === 6;
+     * jasenet.lisaa(seiska); jasenet.getLkm() === 7;
+     * jasenet.lisaa(kasi); jasenet.getLkm() === 8;
+     * jasenet.lisaa(ysi); jasenet.getLkm() === 9;
+     * jasenet.lisaa(kymppi); jasenet.getLkm() === 10;
+     * jasenet.lisaa(ykstoista); jasenet.getLkm() === 11;
      * </pre>
      */
     public void lisaa(Jasen jasen) {
