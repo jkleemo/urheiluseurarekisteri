@@ -124,10 +124,12 @@ public class Valineet implements Iterable<Valine> {
      *  valineet.lisaa(jouko1);
      *  valineet.lisaa(jouko2);
      *  valineet.tallenna();
+     *  valineet.anna(0).getValineID() === jouko1.getValineID();
      *  valineet = new Valineet();           
      *  valineet.lueTiedostosta();  
      *  valineet.lisaa(jouko2);
      *  valineet.tallenna();
+     *  valineet.anna(1).getValineID() === jouko2.getValineID();
      *  String hakemisto = "testi";
      *  String tiedNimi = hakemisto+"/nimet";
      *  File ftied = new File(tiedNimi+".dat");

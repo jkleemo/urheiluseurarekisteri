@@ -227,10 +227,12 @@ public class Jasenet implements Iterable<Jasen> {
      *  jasenet.lisaa(jouko1);
      *  jasenet.lisaa(jouko2);
      *  jasenet.tallenna();
+     *  jasenet.anna(0).getJasenID() === jouko1.getJasenID();
      *  jasenet = new Jasenet();           
      *  jasenet.lueTiedostosta();  
      *  jasenet.lisaa(jouko2);
      *  jasenet.tallenna();
+     *  jasenet.anna(1).getJasenID() === jouko2.getJasenID();
      *  String hakemisto = "testi";
      *  String tiedNimi = hakemisto+"/nimet";
      *  File ftied = new File(tiedNimi+".dat");

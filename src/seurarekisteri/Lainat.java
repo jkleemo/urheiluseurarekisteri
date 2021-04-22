@@ -248,10 +248,12 @@ public class Lainat implements Iterable<Laina> {
      *  lainat.lisaa(jouko1);
      *  lainat.lisaa(jouko2);
      *  lainat.tallenna();
+     *  lainat.anna(0).getLainaID() === jouko1.getLainaID();
      *  lainat = new Lainat();           
      *  lainat.lueTiedostosta();  
      *  lainat.lisaa(jouko2);
      *  lainat.tallenna();
+     *  lainat.anna(1).getLainaID() === jouko2.getLainaID();
      *  String hakemisto = "testi";
      *  String tiedNimi = hakemisto+"/nimet";
      *  File ftied = new File(tiedNimi+".dat");
